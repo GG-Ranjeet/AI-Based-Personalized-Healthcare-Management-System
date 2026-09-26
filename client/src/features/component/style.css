@@ -1,0 +1,252 @@
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
+
+body {
+  font-family: Arial, sans-serif;
+  color: #1e293b;
+}
+
+a {
+  text-decoration: none;
+  color: #333;
+}
+
+/* NAVBAR */
+#navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 40px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+}
+
+#logoBox {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+#logo {
+  color: #2563eb;
+}
+
+#tagline {
+  font-size: 15px;
+  color: #000000;
+}
+
+#navLinks {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+}
+
+#loginBtn {
+  padding: 8px 20px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#loginBtn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Hamburger - hidden on desktop, shown on mobile via media query below */
+#hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+#hamburger span {
+  width: 25px;
+  height: 3px;
+  background-color: #1e293b;
+}
+
+/* HERO */
+#hero {
+  text-align: center;
+  padding: 90px 20px;
+  background: linear-gradient(180deg, #eef3ff 0%, #ffffff 100%);
+}
+
+#hero h1 {
+  font-size: 36px;
+  max-width: 750px;
+  margin: 0 auto 20px auto;
+}
+
+#hero p {
+  max-width: 600px;
+  margin: 0 auto 30px auto;
+  color: #555;
+}
+
+#ctaBtn {
+  padding: 12px 30px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#ctaBtn:hover {
+  background-color: #1d4ed8;
+}
+
+/* STATS - statBox and counter are classes because there are 3 of each */
+#stats {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  padding: 50px 20px;
+  background-color: #1e293b;
+  color: white;
+  flex-wrap: wrap;
+}
+
+.statBox {
+  text-align: center;
+}
+
+.counter {
+  font-size: 32px;
+  color: #60a5fa;
+}
+
+/* FEATURES */
+#features {
+  padding: 70px 40px;
+  text-align: center;
+}
+
+#featuresSubtext {
+  color: #666;
+  margin-bottom: 40px;
+}
+
+#featureCards {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* card is a class because there are 6 of them, styled identically */
+.card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 25px;
+  width: 260px;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+  color: #2563eb;
+  margin-bottom: 10px;
+}
+
+/* ABOUT */
+#about {
+  padding: 60px 40px;
+  background-color: #f5f8ff;
+  text-align: center;
+}
+
+#about p {
+  max-width: 700px;
+  margin: 20px auto 0 auto;
+  color: #555;
+}
+
+/* CONTACT */
+#contact {
+  padding: 70px 40px;
+  text-align: center;
+}
+
+#contactForm {
+  max-width: 450px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#contactForm input,
+#contactForm textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+}
+
+#contactForm button {
+  padding: 12px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#contactForm button:hover {
+  background-color: #1d4ed8;
+}
+
+#formMsg {
+  margin-top: 15px;
+  color: #16a34a;
+  font-weight: bold;
+}
+
+/* FOOTER */
+#footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #1e293b;
+  color: white;
+}
+
+/* "show" is a state class - JS adds/removes it to open/close the mobile menu */
+@media (max-width: 768px) {
+  #navLinks {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 65px;
+    right: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  #navLinks.show {
+    display: flex;
+  }
+
+  #hamburger {
+    display: flex;
+  }
+}

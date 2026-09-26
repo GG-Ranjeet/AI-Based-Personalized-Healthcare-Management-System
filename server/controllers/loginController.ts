@@ -28,22 +28,35 @@ export const loginController = async (req: Request, res: Response): Promise<void
         }
 
         const payload = {
-                    userId: patient._id,
-                    userName: patient.name,
-                    email: patient.email,
-                    role: patient.role,
-                };
-                const secret = process.env.JWT_SECRET;
-                if (!secret) {
-                    throw new Error("JWT_SECRET is not defined in environment variables");
-                }
-                const token = jwt.sign(payload, secret, {
-                    expiresIn: '24h' 
-                });
+            userId: patient._id,
+            userName: patient.name,
+            email: patient.email,
+            role: patient.role,
+        };
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            throw new Error("JWT_SECRET is not defined in environment variables");
+        }
+        const accessToken = jwt.sign(
+            payload,
+            secret,
+            { expiresIn: "15m" }
+        );
+        const refreshToken = jwt.sign(
+            payload,
+            secret,
+            { expiresIn: "7d" }
+        );
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
 
-        res.status(200).json({ success: true, message: 'Login successful', patient: payload, token: token });
+        res.status(200).json({ success: true, message: 'Login successful', patient: payload, token: accessToken });
 
-    }catch (error) {
+    } catch (error) {
         console.error('Error in loginController:', error);
     }
 }
