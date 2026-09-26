@@ -9,6 +9,7 @@ import { Home } from "./component/Home";
 import ProtectedRoute from "./component/utils/ProtectedRoute";
 import DashboardView from "./dashboard/patient_dashboard";
 import { useEffect, useState } from "react";
+import ChatView from "./dashboard/chatView";
 
 const initialAppointments = [
     {
@@ -39,6 +40,18 @@ function App() {
         const saved = localStorage.getItem("health_app_appointments");
         return saved ? JSON.parse(saved) : initialAppointments;
     });
+  const defaultWelcomeMessage = {
+    sender: 'bot',
+    html: `
+      <p>Hello! I am your <strong>AI Healthcare Recommendation Assistant</strong>.</p>
+      <p>Describe how you are feeling or what symptoms you have (e.g., <em>"I have a high fever and headache"</em>). I will analyze your symptoms, estimate risk level, and recommend the right doctor department & first-aid steps.</p>
+    `
+  };
+
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem('health_app_chat');
+    return saved ? JSON.parse(saved) : [defaultWelcomeMessage];
+  });
     useEffect(() => {
         localStorage.setItem("health_app_appointments", JSON.stringify(appointments));
     }, [appointments]);
@@ -59,6 +72,8 @@ function App() {
                         <Route element={<ProtectedRoute />}>
                             <Route path="/dashboard" element={<Dashboard />}>
                                 <Route index element={<DashboardView appointments={appointments} patientInfo={patientInfo} />} />
+                                <Route path="chat" element={ <ChatView messages={messages} setMessages={setMessages} />} />
+                                <Route path="appointment" element={<Example />} />
                                 <Route path="example" element={<Example />} />
                             </Route>
                         </Route>
