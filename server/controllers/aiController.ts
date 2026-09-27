@@ -59,4 +59,17 @@ const continueChat = async (req: express.Request, res: express.Response) => {
     res.json({ reply: response.text });
 }
 
-export { startNewChat, continueChat };
+const getSessions = async (req: express.Request, res: express.Response) => {
+    const sessions = await chatSession.getAllSessions();
+    res.json({ sessions });
+}
+
+const getSessionHistory = async (req: express.Request, res: express.Response) => {
+    const sessionId = Array.isArray(req.params.sessionId)
+        ? req.params.sessionId[0]
+        : req.params.sessionId;
+    const history = await chatSession.findSessionHistory(sessionId);
+    res.json({ history });
+}
+
+export { startNewChat, continueChat, getSessions, getSessionHistory };

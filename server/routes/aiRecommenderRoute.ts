@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { continueChat, startNewChat } from "../controllers/aiController.ts";
+import { continueChat, startNewChat, getSessions, getSessionHistory } from "../controllers/aiController.ts";
 
 const router = Router();
 
-router.get('/chat/new', startNewChat);
-router.get('/chat/:sessionId', continueChat);
+router.post('/new', startNewChat);
+router.post('/:sessionId', continueChat);
+router.get('/sessions', getSessions);
+router.get('/sessions/:sessionId', getSessionHistory);
 
 export default router;

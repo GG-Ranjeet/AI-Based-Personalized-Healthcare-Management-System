@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # 1. MongoDB Database
+  database:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  # 2. Node.js Backend API
+  backend:
+    command: npm run dev
+    build: ./server
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://database:27017/mydatabase
+      - JWT_SECRET=your-super-secret-key-123;
+    volumes:
+      - ./server:/app
+      - /app/node_modules 
+    depends_on:
+      - database
+
+  # 3. React Frontend
+  frontend:
+    command: npm run dev
+    build: ./client
+    ports:
+      - "3000:5173"
+    stdin_open: true # Keeps React running interactively in development
+    environment:
+      - VITE_PROXY_API_TARGET=http://backend:5000
+      - CHOKIDAR_USEPOLLING=true 
+    volumes:
+      - ./client:/app
+      - /app/node_modules 
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:

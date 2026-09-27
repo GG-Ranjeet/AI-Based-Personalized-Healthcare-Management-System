@@ -30,7 +30,9 @@ app.use(globalErrorHandler);
 
 // Default
 app.get("/", (req: Request, res: Response) => {
-    res.send("Hello World!");
+    res.status(404).json({
+                success: false, message: 'Not Valid Route'
+            });
 });
 
 export default app;
