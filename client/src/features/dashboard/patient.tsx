@@ -69,7 +69,7 @@ const patient: React.FC = () => {
                 {/* <NavBar></NavBar> */}
                 <Header patientInfo={patientInfo} />
 
-                <div className="p-4">
+                <div className="flex-1 p-4 overflow-y-auto flex flex-col">
                     <Outlet />
                 </div>
             </div>

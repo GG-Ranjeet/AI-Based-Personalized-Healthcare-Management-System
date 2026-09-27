@@ -23,5 +23,10 @@ export const chatSession = {
             { upsert: true, new: true } // Create a new document if it doesn't exist
         ).lean();
         return session;
+    },
+    async getAllSessions() {
+        return await ChatSession.find({}, { sessionId: 1, updatedAt: 1, history: 1 })
+            .sort({ updatedAt: -1 })
+            .lean();
     }
 }
