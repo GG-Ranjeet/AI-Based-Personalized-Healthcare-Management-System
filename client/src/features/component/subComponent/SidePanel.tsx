@@ -55,11 +55,11 @@ const SidePanel = () => {
     }, [selectedPage]);
 
     return (
-        <div className="flex flex-col item-start gap-4 w-1/6 bg-gray-50 h-full p-4  border border-gray-200 shadow-md">
+        <div className="flex flex-col items-center md:items-start gap-4  bg-gray-50 h-full p-2 md:p-4 border-r border-gray-200 shadow-md ">
             {/* top */}
-            <div className="flex flex-col items-start w-full h-1/8 p-4">
-                <h1 className="text-indigo-700">MediFlow AI</h1>
-                <p className="font-medium text-20">Patient Portal</p>
+            <div className="flex flex-col items-center md:items-start w-full py-4">
+                <h1 className="text-indigo-700 font-bold text-2xl hidden md:block">MediFlow AI</h1>
+                <h1 className="text-indigo-700 font-bold text-xl md:hidden" title="MediFlow AI">M</h1>
             </div>
 
             {/* middle */}
@@ -78,36 +78,38 @@ const SidePanel = () => {
             <hr />
 
             {/* bottom */}
-            <div className="w-full h-1/4 flex flex-col ">
+            <div className="w-full flex flex-col mt-auto pb-4 gap-2">
                 {/* setting */}
-                <div className="flex flex-row items-center gap-2 w-full h-1/4 p-4">
-                    <svg width="20px" height="20px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000000">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <div className="flex flex-row items-center justify-center md:justify-start gap-3 w-full p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors" title="Settings">
+                    <svg width="24px" height="24px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#475569" className="flex-shrink-0">
+                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                         <g id="SVGRepo_iconCarrier">
                             <path
-                                fill="#000000"
                                 d="M600.704 64a32 32 0 0 1 30.464 22.208l35.2 109.376c14.784 7.232 28.928 15.36 42.432 24.512l112.384-24.192a32 32 0 0 1 34.432 15.36L944.32 364.8a32 32 0 0 1-4.032 37.504l-77.12 85.12a357.12 357.12 0 0 1 0 49.024l77.12 85.248a32 32 0 0 1 4.032 37.504l-88.704 153.6a32 32 0 0 1-34.432 15.296L708.8 803.904c-13.44 9.088-27.648 17.28-42.368 24.512l-35.264 109.376A32 32 0 0 1 600.704 960H423.296a32 32 0 0 1-30.464-22.208L357.696 828.48a351.616 351.616 0 0 1-42.56-24.64l-112.32 24.256a32 32 0 0 1-34.432-15.36L79.68 659.2a32 32 0 0 1 4.032-37.504l77.12-85.248a357.12 357.12 0 0 1 0-48.896l-77.12-85.248A32 32 0 0 1 79.68 364.8l88.704-153.6a32 32 0 0 1 34.432-15.296l112.32 24.256c13.568-9.152 27.776-17.408 42.56-24.64l35.2-109.312A32 32 0 0 1 423.232 64H600.64zm-23.424 64H446.72l-36.352 113.088-24.512 11.968a294.113 294.113 0 0 0-34.816 20.096l-22.656 15.36-116.224-25.088-65.28 113.152 79.68 88.192-1.92 27.136a293.12 293.12 0 0 0 0 40.192l1.92 27.136-79.808 88.192 65.344 113.152 116.224-25.024 22.656 15.296a294.113 294.113 0 0 0 34.816 20.096l24.512 11.968L446.72 896h130.688l36.48-113.152 24.448-11.904a288.282 288.282 0 0 0 34.752-20.096l22.592-15.296 116.288 25.024 65.28-113.152-79.744-88.192 1.92-27.136a293.12 293.12 0 0 0 0-40.256l-1.92-27.136 79.808-88.128-65.344-113.152-116.288 24.96-22.592-15.232a287.616 287.616 0 0 0-34.752-20.096l-24.448-11.904L577.344 128zM512 320a192 192 0 1 1 0 384 192 192 0 0 1 0-384zm0 64a128 128 0 1 0 0 256 128 128 0 0 0 0-256z"
                             ></path>
                         </g>
                     </svg>
-                    <p className="font-medium text-20">Settings</p>
+                    <p className="font-medium text-sm text-slate-700 hidden md:block">Settings</p>
                 </div>
 
-                <div className="flex flex-row items-center gap-2 w-full h-1/4 p-4">
-                    <svg width="20px" height="20px" fill="#000000" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <div className="flex flex-row items-center justify-center md:justify-start gap-3 w-full p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors" title="Help">
+                    <svg width="24px" height="24px" fill="#475569" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                         <g id="SVGRepo_iconCarrier">
                             <path d="M12,1A11,11,0,1,0,23,12,11.013,11.013,0,0,0,12,1Zm0,20a9,9,0,1,1,9-9A9.011,9.011,0,0,1,12,21Zm1-4.5v2H11v-2Zm3-7a3.984,3.984,0,0,1-1.5,3.122A3.862,3.862,0,0,0,13.063,15H11.031a5.813,5.813,0,0,1,2.219-3.936A2,2,0,0,0,13.1,7.832a2.057,2.057,0,0,0-2-.14A1.939,1.939,0,0,0,10,9.5,1,1,0,0,1,8,9.5V9.5a3.909,3.909,0,0,1,2.319-3.647,4.061,4.061,0,0,1,3.889.315A4,4,0,0,1,16,9.5Z"></path>
                         </g>
                     </svg>
-                    <p className="font-medium text-20">Help</p>
+                    <p className="font-medium text-sm text-slate-700 hidden md:block">Help</p>
                 </div>
 
                 {/* emergency */}
-                <div>
-                    <button className="bg-red-700 text-white font-bold py-2 px-4 rounded-xl w-full">Emergency</button>
+                <div className="mt-2 w-full px-1">
+                    <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 md:py-2 px-0 md:px-4 rounded-xl w-full flex justify-center items-center gap-2 transition-colors shadow-sm" title="Emergency">
+                        <svg className="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <span className="hidden md:block">Emergency</span>
+                    </button>
                 </div>
             </div>
         </div>

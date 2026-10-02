@@ -63,10 +63,9 @@ const patient: React.FC = () => {
         return <div>Loading...</div>;
     }
     return (
-        <div className="flex flex-row h-screen w-screen overflow-hidden">
-            <SidePanel></SidePanel>
-            <div className="flex flex-col w-5/6 h-screen">
-                {/* <NavBar></NavBar> */}
+        <div className="fixed inset-0 flex flex-row w-full h-full bg-slate-50">
+            <SidePanel />
+            <div className="flex-1 flex flex-col h-full overflow-hidden">
                 <Header patientInfo={patientInfo} />
 
                 <div className="flex-1 p-4 overflow-y-auto flex flex-col">
