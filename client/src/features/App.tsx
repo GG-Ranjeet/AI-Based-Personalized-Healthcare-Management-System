@@ -91,7 +91,7 @@ function App() {
     };
 
     return (
-        <div id="app" className="min-h-screen flex flex-col bg-gray-100">
+        <div id="app" className="w-full min-h-screen flex flex-col bg-gray-100">
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Home />} />

@@ -58,17 +58,13 @@ body.dark-theme {
 }
 
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-body {
+.app-container {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    height: 100vh;
-    overflow: hidden;
     transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
