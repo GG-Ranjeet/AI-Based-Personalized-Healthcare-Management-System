@@ -30,7 +30,7 @@ There is two way a person can contribute on a project
 1. By Forking a project
 2. By getting Direct access.
 
-In this repo we will be working by direct access.
+In thishu repo we will be working by direct access.
 
 
 
