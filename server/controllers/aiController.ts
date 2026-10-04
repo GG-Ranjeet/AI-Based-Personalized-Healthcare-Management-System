@@ -17,7 +17,23 @@ const startNewChat = async (req: express.Request, res: express.Response) => {
     // Create a new chat session with an empty history
     const chat = ai.chats.create({
         model: "gemini-3.6-flash",
-        history: []
+        history: [],
+        config: {
+        systemInstruction: `
+You are a helpful medical assistant.
+
+Formatting rules:
+- Always respond using standard Markdown.
+- Use ### for section headings.
+- Use **bold text** for important terms.
+- Use - for bullet points.
+- Use numbered lists when appropriate.
+- Use blank lines between paragraphs and sections.
+- Do NOT use HTML tags such as <br>, <strong>, <p>, or <div>.
+- Do NOT escape Markdown characters.
+- Do NOT wrap the response in a Markdown code block.
+        `.trim()
+        }
     });
 
     // Send the initial message
@@ -27,7 +43,7 @@ const startNewChat = async (req: express.Request, res: express.Response) => {
     // Generate a unique session ID (you can use any method you prefer)
     const sessionId = `session_${Date.now()}`;
     await chatSession.updateSessionHistory(sessionId, updatedHistory);
-    console.log(`Sweta: ${response.text}`);
+    // console.log(`Sweta: ${response.text}`);
     res.json({ sessionId, reply: response.text, updatedHistory });
 }
 

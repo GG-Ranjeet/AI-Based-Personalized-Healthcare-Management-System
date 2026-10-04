@@ -5,6 +5,7 @@ import Dashboard from "./dashboard/patient";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignupForm from "./auth/SignupForm";
+import ForgotPassword from "./auth/ForgotPassword";
 import { Home } from "./component/Home";
 import ProtectedRoute from "./component/utils/ProtectedRoute";
 import DashboardViewOld from "./dashboard/patient_dashboard";
@@ -97,13 +98,14 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/signup" element={<SignupForm />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
 
                     <Route element={<ProtectedRoute />}>
                         {/* Old Dashboard Routes */}
                         <Route path="/dashboard" element={<Dashboard />}>
                             <Route index element={<DashboardViewOld appointments={appointments} patientInfo={patientInfo} />} />
                             <Route path="chat" element={<ChatViewOld messages={messages} setMessages={setMessages} />} />
-                            <Route path="appointment" element={<Example />} />
+                            <Route path="appointment" element={<AppointmentsView appointments={appointments} onCancelAppointment={handleCancelAppointment} />} />
                             <Route path="example" element={<Example />} />
                         </Route>
 

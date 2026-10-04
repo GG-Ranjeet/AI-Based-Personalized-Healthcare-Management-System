@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Selector from "../component/utils/Selector";
 import Checkbox from "../component/utils/Checkbox";
 
@@ -13,17 +14,22 @@ const LoginForm = () => {
         { id: 3, name: "Admin" },
     ];
 
+    const [errorMessage, setErrorMessage] = useState("");
+
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
+        setErrorMessage(""); // clear error on type
     }
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
+        setErrorMessage(""); // clear error on type
     }
     const handleRoleChange = (id: number) => {
         setSelectedRole(id);
     }
     const handleLoginForm = async (e: React.BaseSyntheticEvent<SubmitEvent, HTMLFormElement, HTMLFormElement>) => {
         e.preventDefault();
+        setErrorMessage(""); // clear existing errors
 
         const form = e.target;
         const formData = new FormData(form);
@@ -57,15 +63,17 @@ const LoginForm = () => {
                 }
             } else {
                 const result = await response.json();
+                console.log(result);
                 console.error("Login failed:", result.message);
                 if (result.message) {
-                    alert(`Login failed: ${result.message}`);
+                    setErrorMessage(result.message);
                 } else {
-                    alert("Login failed. Please check your details and try again.");
+                    setErrorMessage("Login failed. Please check your details and try again.");
                 }
             }
         } catch (error) {
             console.error("Error during login:", error);
+            setErrorMessage("An unexpected error occurred. Please try again.");
         }
     }
 
@@ -73,7 +81,7 @@ const LoginForm = () => {
     return (
         <div className="flex-1 flex items-center justify-center w-full min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-md flex flex-col items-center gap-6">
-                
+
                 {/* Logo and Header */}
                 <div className="flex flex-col items-center text-center space-y-2">
                     <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md mb-2">
@@ -94,6 +102,14 @@ const LoginForm = () => {
                             </label>
                             <Selector name="role" type="selector" options={roles} selected={selectedRole} handler={handleRoleChange}></Selector>
                         </div>
+
+                        {errorMessage && (
+                            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+                                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                <span>{errorMessage}</span>
+                            </div>
+                        )}
+
                         <div>
                             <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
                                 Email or Member ID
@@ -121,9 +137,9 @@ const LoginForm = () => {
                                 <label htmlFor="password" className="block text-sm font-semibold text-slate-700">
                                     Password
                                 </label>
-                                <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
+                                <Link to="/forgot-password" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
                                     Forgot Password?
-                                </a>
+                                </Link>
                             </div>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

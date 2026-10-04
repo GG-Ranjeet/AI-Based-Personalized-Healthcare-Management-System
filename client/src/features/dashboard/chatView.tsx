@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 // import { analyzePatientInput } from '../services/aiEngine';
 import "./chatView.css"
+import ReactMarkdown from 'react-markdown';
 
 export default function ChatView({ messages, setMessages }: any) {
   const [input, setInput] = useState('');
@@ -100,7 +101,7 @@ export default function ChatView({ messages, setMessages }: any) {
       const reply = data.reply || data.error || 'No response from server.';
       const formattedHtml = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
 
-      setMessages([...messagesToUse, { sender: 'bot', html: formattedHtml }]);
+      setMessages([...messagesToUse, { sender: 'bot', reply, html: reply }]);
     } catch (error: any) {
       console.error("Chat error:", error);
       let errorMessage = 'Sorry, I encountered an error connecting to the server.';
@@ -187,11 +188,16 @@ export default function ChatView({ messages, setMessages }: any) {
         {messages.map((msg: any, index: any) => (
           <div key={index} className={`message ${msg.sender}-message`}>
             <div className="avatar">{msg.sender === 'bot' ? '🩺' : '👤'}</div>
-            <div className="message-content">
+            <div className="message-content ai-message">
               {msg.html ? (
-                <div dangerouslySetInnerHTML={{ __html: msg.html }} />
+                <ReactMarkdown>
+                  {msg.html}
+                </ReactMarkdown>
               ) : (
-                <p>{msg.text}</p>
+                <ReactMarkdown>
+                  {msg.text}
+                </ReactMarkdown>
+                // <p> hi</p>
               )}
               {msg.isError && (
                 <div style={{ marginTop: '8px', fontSize: '13px', color: '#ff4d4f', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>

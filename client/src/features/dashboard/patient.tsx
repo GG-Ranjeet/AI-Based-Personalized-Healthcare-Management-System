@@ -14,7 +14,7 @@ interface UserProfile {
 
 const initialPatientInfo = {
     id: "P-80492",
-    name: "Sumit Singh",
+    name: "Sumitu Singh",
     age: 24,
     gender: "Male",
     bloodGroup: "B+",
@@ -24,7 +24,7 @@ const patient: React.FC = () => {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const navigate = useNavigate();
-    const [patientInfo] = useState(initialPatientInfo);
+    const [patientInfo, setPatientInfo] = useState(initialPatientInfo);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -34,17 +34,26 @@ const patient: React.FC = () => {
                     navigate("/login");
                     return;
                 }
-                const response = await fetch("api/dashboard/", {
+                const response = await fetch("/api/dashboard/", {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                 });
+                console.log(response);
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("Data for the user context see data.user specifically : ",data);
                     setUser(data.user);
+
+                    // Update Header's patientInfo with backend data
+                    setPatientInfo((prev: any) => ({
+                        ...prev,
+                        name: data.user.name,
+                        id: data.user.id
+                    }));
                 } else {
                     localStorage.removeItem("token");
                     navigate("/login");
@@ -69,7 +78,7 @@ const patient: React.FC = () => {
                 <Header patientInfo={patientInfo} />
 
                 <div className="flex-1 p-4 overflow-y-auto flex flex-col">
-                    <Outlet />
+                    <Outlet context={{ user }} />
                 </div>
             </div>
         </div>

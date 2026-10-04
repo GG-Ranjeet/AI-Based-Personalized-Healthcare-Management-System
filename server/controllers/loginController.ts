@@ -16,14 +16,19 @@ export const loginController = async (req: Request, res: Response): Promise<void
 
         const patient = await Patient.findOne({ email }).select('+password');
         if (!patient) {
-            res.status(404).json({ success: false, message: 'User not found' });
+            res.status(404).json({ success: false, message: "User doesn't exist" });
             return;
         }
 
-        const isMatch = await bcrypt.compare(password, patient.password);
+        let isMatch = await bcrypt.compare(password, patient.password);
+
+        // Fallback: Check if the password in the database is in plain text (common for test users created before hashing was implemented)
+        if (!isMatch && password === patient.password) {
+            isMatch = true;
+        }
 
         if (!isMatch) {
-            res.status(400).json({ success: false, message: 'Invalid Credentials' });
+            res.status(400).json({ success: false, message: 'Incorrect password' });
             return;
         }
 

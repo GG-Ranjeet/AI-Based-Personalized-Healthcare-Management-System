@@ -1,8 +1,17 @@
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 
-export default function DashboardView({ appointments, patientInfo }: any) {
+export default function DashboardView({ appointments, patientInfo: fallbackPatientInfo }: any) {
   const navigate = useNavigate();
+  const context: any = useOutletContext();
+  const backendUser = context?.user;
+
+  // Merge the hardcoded data with the real backend user data
+  const patientInfo = {
+    ...fallbackPatientInfo,
+    name: backendUser?.name || fallbackPatientInfo?.name,
+    id: backendUser?.id || fallbackPatientInfo?.id,
+  };
 
   return (
     <div className="page-container dashboard-fade">

@@ -1,7 +1,6 @@
-import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function DashboardView({ appointments, patientInfo }) {
+export default function DashboardView({ appointments, patientInfo }: any) {
   const navigate = useNavigate();
 
   return (
@@ -134,7 +133,7 @@ export default function DashboardView({ appointments, patientInfo }) {
               </div>
             ) : (
               <div className="appointment-mini-list">
-                {appointments.slice(0, 3).map((appt) => (
+                {appointments.slice(0, 3).map((appt : any) => (
                   <div key={appt.id} className="appointment-mini-card">
                     <div className="appt-doc-avatar">{appt.doctorAvatar || '👨‍⚕️'}</div>
                     <div className="appt-info">

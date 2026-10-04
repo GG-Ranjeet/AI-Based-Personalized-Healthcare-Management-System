@@ -71,12 +71,71 @@
     font-size: 14px;
     line-height: 1.6;
     box-shadow: var(--shadow-sm);
+    text-align: left;
 }
+
+.ai-message{
+    width: 100%;
+    max-width: 760px;
+    padding: 20px 24px;
+
+    font-size: 15px;
+    line-height: 1.7;
+    color: #1e293b;
+
+    text-align: left;
+}
+
 
 .user-message .message-content {
     background-color: var(--user-msg-bg);
     color: var(--user-msg-text);
     border: none;
+}
+
+.ai-message p {
+    margin: 0 0 12px;
+}
+
+/* Main section headings */
+.ai-message h3 {
+    margin: 24px 0 10px;
+
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    color: #0f172a;
+}
+
+/* Don't give first heading huge top spacing */
+.ai-message h3:first-child {
+    margin-top: 0;
+}
+
+/* Lists */
+.ai-message ul,
+.ai-message ol {
+    margin: 10px 0 16px;
+    padding-left: 24px;
+}
+
+.ai-message li {
+    margin-bottom: 8px;
+    padding-left: 3px;
+}
+
+/* Bold terms */
+.ai-message strong {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+/* Horizontal separator */
+.ai-message hr {
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+    margin: 24px 0;
 }
 
 .recommendation-card {
