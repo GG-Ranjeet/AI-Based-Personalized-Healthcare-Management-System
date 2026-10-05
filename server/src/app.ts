@@ -8,6 +8,7 @@ import dashboardRoute from "../routes/dashboardRoute.ts"; // Import the dashboar
 import { authenticateToken } from "../middleware/auth/AuthenticateToken.ts";
 import aiRecommenderRoute from "../routes/aiRecommenderRoute.ts";
 import medicineRoute from "../routes/medicineRoute.ts";
+import auditRoute from "../routes/auditRoute.ts";
 
 const app: Express = express();
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use("/api/signup", signupRoutes);
 app.use("/api/chat", aiRecommenderRoute);
 app.use("/api/dashboard", authenticateToken, dashboardRoute); 
 app.use("/api/medicine", medicineRoute); 
+app.use("/api/audit", auditRoute);
 
 app.use((req, res) => {
     res.status(404).json({

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function SystemHealth() {
 
@@ -6,48 +6,34 @@ function SystemHealth() {
   const [actionType, setActionType] = useState("All Action Types");
   const [timeFilter, setTimeFilter] = useState("Last 24 Hours");
   const [page, setPage] = useState(1);
-  // const [refreshing, setRefreshing] = useState(false);
+  const [logs, setLogs] = useState<any[]>([]);
 
-  const logs = [
-    {
-      time: "2023-10-27 14:32:01",
-      user: "Dr. J. Doe",
-      avatar: "JD",
-      type: "DATA_EXPORT",
-      detail: "Exported patient list for Clinic A",
-    },
-    {
-      time: "2023-10-27 14:15:22",
-      user: "System API",
-      avatar: "⚙️",
-      type: "AUTH_FAIL",
-      detail: "Invalid API key attempt (Production_v1)",
-    },
-    {
-      time: "2023-10-27 13:50:00",
-      user: "Admin (Current)",
-      avatar: "A",
-      type: "SETTINGS_UPDATE",
-      detail: "Modified system notification thresholds",
-    },
-    {
-      time: "2023-10-27 12:00:05",
-      user: "System Cron",
-      avatar: "⚙️",
-      type: "DB_BACKUP",
-      detail: "Automated daily database snapshot completed",
-    },
-  ];
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch("/api/audit", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setLogs(data.logs);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchLogs();
+  }, []);
 
   const filteredLogs = logs.filter((log) => {
-    const text =
-      '${log.user} ${log.type} ${log.detail}.toLowerCase()';
+    const text = `${log.actor_role} ${log.actor_id} ${log.action} ${log.resource_type}`.toLowerCase();
 
     const searchMatch = text.includes(search.toLowerCase());
 
     const typeMatch =
       actionType === "All Action Types" ||
-      log.type === actionType;
+      log.action === actionType;
 
     return searchMatch && typeMatch;
   });
@@ -225,7 +211,6 @@ function SystemHealth() {
 
             </div>
 
-            {/* ACTION */}
             <select
               value={actionType}
               onChange={(e) => {
@@ -235,10 +220,9 @@ function SystemHealth() {
               className="w-36.25 h-8.5 px-2 border border-[#d9dfe8] rounded-md bg-white text-[11px] outline-none"
             >
               <option>All Action Types</option>
-              <option>DATA_EXPORT</option>
-              <option>AUTH_FAIL</option>
-              <option>SETTINGS_UPDATE</option>
-              <option>DB_BACKUP</option>
+              {Array.from(new Set(logs.map(l => l.action))).map(action => (
+                <option key={action} value={action}>{action}</option>
+              ))}
             </select>
 
             {/* TIME */}
@@ -293,7 +277,7 @@ function SystemHealth() {
                 >
 
                   <td className="py-3 px-3 text-[11px] text-gray-600">
-                    {log.time}
+                    {new Date(log.timestamp).toLocaleString()}
                   </td>
 
                   <td className="py-3 px-3">
@@ -301,11 +285,11 @@ function SystemHealth() {
                     <div className="flex items-center gap-2">
 
                       <div className="w-6.75 h-6.75 rounded-full bg-[#e7f0ff] text-[#2162c4] flex items-center justify-center text-[9px] font-bold">
-                        {log.avatar}
+                        {log.actor_role?.[0]?.toUpperCase() || 'U'}
                       </div>
 
                       <span className="text-[11px] text-[#394354]">
-                        {log.user}
+                        {log.actor_role} ({log.actor_id})
                       </span>
 
                     </div>
@@ -315,18 +299,20 @@ function SystemHealth() {
                   <td className="py-3 px-3">
 
                     <span
-                      className={`px-2 py-1 rounded text-[9px] font-semibold ${log.type === "AUTH_FAIL"
+                      className={`px-2 py-1 rounded text-[9px] font-semibold ${log.status === "FAILURE"
                         ? "bg-[#ffe1e1] text-[#c84d56]"
+                        : log.status === "WARNING"
+                        ? "bg-orange-100 text-orange-600"
                         : "bg-[#e5efff] text-[#2162c4]"
                         }`}
                     >
-                      {log.type}
+                      {log.action}
                     </span>
 
                   </td>
 
                   <td className="py-3 px-3 text-[11px] text-gray-600">
-                    {log.detail}
+                    {log.resource_type ? `${log.resource_type} ${log.resource_id ? `#${log.resource_id}` : ''}` : 'System Action'}
                   </td>
 
                 </tr>
@@ -341,7 +327,7 @@ function SystemHealth() {
           <div className="flex items-center justify-between mt-4">
 
             <div className="text-[10px] text-gray-500">
-              Showing {filteredLogs.length} of 2,451 entries
+              Showing {filteredLogs.length} entries
             </div>
 
             {/* PAGINATION */}

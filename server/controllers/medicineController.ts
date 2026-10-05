@@ -3,7 +3,7 @@ import Medicine from "../models/Medicine.ts";
 
 export const getMedicines = async (req: Request, res: Response) => {
     try {
-        const userId = req.user?.id;
+        const userId = req.user?.id || req.user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
         let medicines = await Medicine.find({ userId }).sort({ createdAt: 1 });
@@ -27,7 +27,7 @@ export const getMedicines = async (req: Request, res: Response) => {
 
 export const markTaken = async (req: Request, res: Response) => {
     try {
-        const userId = req.user?.id;
+        const userId = req.user?.id || req.user?.userId;
         if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
         const { id } = req.params;
