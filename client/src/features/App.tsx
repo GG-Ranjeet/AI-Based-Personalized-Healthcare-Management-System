@@ -123,12 +123,11 @@ function App() {
 
                         {/* New Admin Routes */}
                         <Route path="/admin" element={<AdminLayout />}>
-                            <Route index element={<AdminLogin />} />
+                            <Route index element={<AdminDashboard />} />
                             <Route path="dashboard" element={<AdminDashboard />} />
                             <Route path="view-users" element={<UserManagement />} />
                             <Route path="analytics" element={<Analytics />} />
                             <Route path="system-health" element={<SystemHealth />} />
-                            <Route path="user-management" element={<UserManagement />} />
                         </Route>
                     </Route>
                 </Routes>

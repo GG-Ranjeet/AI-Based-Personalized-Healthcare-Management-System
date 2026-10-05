@@ -1,6 +1,7 @@
 
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
-
+import ReactMarkdown from 'react-markdown';
 export default function DashboardView({ appointments, patientInfo: fallbackPatientInfo }: any) {
   const navigate = useNavigate();
   const context: any = useOutletContext();
@@ -11,6 +12,72 @@ export default function DashboardView({ appointments, patientInfo: fallbackPatie
     ...fallbackPatientInfo,
     name: backendUser?.name || fallbackPatientInfo?.name,
     id: backendUser?.id || fallbackPatientInfo?.id,
+  };
+
+  // Quick AI Recommender state
+  const [symptomInput, setSymptomInput] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiRecommendation, setAiRecommendation] = useState('');
+
+  const handleSymptomSubmit = async (e: any) => {
+    e.preventDefault();
+    if (!symptomInput.trim()) return;
+    setAiLoading(true);
+    setAiRecommendation('');
+    try {
+      const response = await fetch('/api/chat/new', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userMessage: symptomInput })
+      });
+      const data = await response.json();
+      setAiRecommendation(data.reply);
+    } catch (err) {
+      console.error(err);
+      setAiRecommendation('Sorry, I encountered an error. Please try again.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Medicine Reminders
+  const [medicines, setMedicines] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch('/api/medicine', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+        if (data.medicines) {
+          setMedicines(data.medicines);
+        }
+      } catch (err) {
+        console.error("Error fetching medicines", err);
+      }
+    };
+    fetchMedicines();
+  }, []);
+
+  const handleMarkTaken = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/medicine/${id}/taken`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        setMedicines(prev => prev.map(m => m._id === id ? { ...m, status: 'taken' } : m));
+      }
+    } catch (err) {
+      console.error("Error updating medicine", err);
+    }
   };
 
   return (
@@ -93,6 +160,31 @@ export default function DashboardView({ appointments, patientInfo: fallbackPatie
       <div className="dashboard-columns" style={{ marginTop: '24px' }}>
         {/* Quick action feature cards */}
         <div className="dashboard-col-main">
+          {/* Quick AI Recommender Widget */}
+          <div className="card-panel" style={{ marginBottom: '24px' }}>
+            <h3 style={{ marginBottom: '14px' }}>🤖 AI Health Recommender</h3>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+              Describe your symptoms below to get an instant risk assessment, recommended department, and first-aid steps.
+            </p>
+            <form onSubmit={handleSymptomSubmit} style={{ display: 'flex', gap: '10px' }}>
+              <input
+                type="text"
+                value={symptomInput}
+                onChange={(e) => setSymptomInput(e.target.value)}
+                placeholder="e.g. I have a severe headache and fever..."
+                style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '14px', outline: 'none' }}
+              />
+              <button type="submit" className="btn-primary" disabled={aiLoading}>
+                {aiLoading ? 'Analyzing...' : 'Analyze Symptoms'}
+              </button>
+            </form>
+            {aiRecommendation && (
+              <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b' }}>
+                <ReactMarkdown>{aiRecommendation}</ReactMarkdown>
+              </div>
+            )}
+          </div>
+
           <h3 style={{ marginBottom: '14px' }}>🚀 Quick Healthcare Services</h3>
           <div className="quick-services-grid">
             <div className="service-card" onClick={() => navigate('/chat')}>
@@ -127,6 +219,28 @@ export default function DashboardView({ appointments, patientInfo: fallbackPatie
 
         {/* Scheduled appointments side column */}
         <div className="dashboard-col-side">
+          {/* Medicine Reminders Widget */}
+          <div className="card-panel" style={{ marginBottom: '16px' }}>
+            <div className="panel-header">
+              <h3>💊 Medicine Reminders</h3>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {medicines.map((med) => (
+                <div key={med._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10px', borderBottom: '1px solid var(--border-color)' }}>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>{med.name}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>⏰ {med.time}</div>
+                  </div>
+                  {med.status === 'taken' ? (
+                    <span style={{ fontSize: '11px', fontWeight: 700, backgroundColor: '#d1fae5', color: '#047857', padding: '4px 8px', borderRadius: '12px' }}>Taken</span>
+                  ) : (
+                    <button onClick={() => handleMarkTaken(med._id)} style={{ fontSize: '11px', fontWeight: 600, backgroundColor: 'var(--accent-color)', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer' }}>Mark Taken</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="card-panel">
             <div className="panel-header">
               <h3>📅 Scheduled Appointments</h3>
@@ -143,7 +257,7 @@ export default function DashboardView({ appointments, patientInfo: fallbackPatie
               </div>
             ) : (
               <div className="appointment-mini-list">
-                {appointments.slice(0, 3).map((appt : any) => (
+                {appointments.slice(0, 3).map((appt: any) => (
                   <div key={appt.id} className="appointment-mini-card">
                     <div className="appt-doc-avatar">{appt.doctorAvatar || '👨‍⚕️'}</div>
                     <div className="appt-info">

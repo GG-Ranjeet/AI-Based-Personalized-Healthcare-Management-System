@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 
 export const loginController = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
 
         if (!email || !password) {
             res.status(400).json({ success: false, message: 'Email and password fields are required' });
@@ -17,6 +17,11 @@ export const loginController = async (req: Request, res: Response): Promise<void
         const patient = await Patient.findOne({ email }).select('+password');
         if (!patient) {
             res.status(404).json({ success: false, message: "User doesn't exist" });
+            return;
+        }
+
+        if (role && patient.role && role.toLowerCase() !== patient.role.toLowerCase()) {
+            res.status(403).json({ success: false, message: `Access denied. Account is not registered as a ${role}.` });
             return;
         }
 

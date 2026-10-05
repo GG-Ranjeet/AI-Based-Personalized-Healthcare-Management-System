@@ -54,12 +54,13 @@ const LoginForm = () => {
                 localStorage.setItem('token', data.token);
 
                 // Add role-based redirection
-                if (role.toLowerCase() === "patient") {
-                    window.location.href = "/patient";
-                } else if (role.toLowerCase() === "admin") {
+                const actualRole = data.patient.role || "patient";
+                if (actualRole.toLowerCase() === "patient") {
+                    window.location.href = "/dashboard";
+                } else if (actualRole.toLowerCase() === "admin") {
                     window.location.href = "/admin";
                 } else {
-                    window.location.href = "/dashboard";
+                    window.location.href = "/";
                 }
             } else {
                 const result = await response.json();

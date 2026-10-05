@@ -1,8 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, type SetStateAction } from "react";
 
 function UserManagement() {
-  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState({
@@ -18,8 +16,6 @@ function UserManagement() {
 
   const [showFilter, setShowFilter] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
   const [page, setPage] = useState(1);
 
   const users = [
@@ -62,153 +58,15 @@ function UserManagement() {
       user.role.toLowerCase().includes(search.toLowerCase())
   );
 
-  const openUser = (user) => {
+  const openUser = (user: SetStateAction<{ name: string; email: string; role: string; department: string; status: string; lastLogin: string; twoFA: string; initials: string; }>) => {
     setSelectedUser(user);
   };
 
-  const menuClick = (pageName) => {
-    if (pageName === "Dashboard") navigate("/dashboard");
-    if (pageName === "User Management") navigate("/users");
-    if (pageName === "Analytics") navigate("/analytics");
-    if (pageName === "Outcomes") navigate("/outcomes");
-    if (pageName === "Settings") navigate("/settings");
-  };
 
   return (
-    <div className="min-h-screen bg-[#f8faff] text-gray-800 flex">
-
-      {/* SIDEBAR */}
-      <aside className="w-[250px] bg-white border-r min-h-screen flex flex-col">
-
-        {/* LOGO */}
-        <div className="h-[82px] border-b flex items-center px-6">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center mr-3">
-            <span className="text-blue-600 text-lg">✚</span>
-          </div>
-
-          <div>
-            <h2 className="font-bold text-[17px] text-[#31598f]">
-              Aegis Admin
-            </h2>
-          </div>
-        </div>
-
-        {/* MENU */}
-        <div className="px-4 pt-5 space-y-2">
-
-          <button
-            onClick={() => menuClick("Dashboard")}
-            className="w-full flex items-center gap-4 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
-          >
-            <span>▦</span>
-            <span className="text-sm">Dashboard</span>
-          </button>
-          <button
-           onClick={() => navigate("/view-users")}
-           className="w-full flex items-center gap-4 px-4 py-2.5 rounded-lg bg-[#eef3ff] text-[#31598f]"
-          >
-           <span>👥</span>
-           <span className="text-sm font-medium">User Management</span>
-          </button>
-
-         
-
-          <button
-            onClick={() => menuClick("Analytics")}
-            className="w-full flex items-center gap-4 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
-          >
-            <span>▣</span>
-            <span className="text-sm">Analytics</span>
-          </button>
-
-          <button
-            onClick={() => menuClick("Outcomes")}
-            className="w-full flex items-center gap-4 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
-          >
-            <span>📈</span>
-            <span className="text-sm">Outcomes</span>
-          </button>
-
-          <button
-            onClick={() => menuClick("Settings")}
-            className="w-full flex items-center gap-4 px-4 py-2.5 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
-          >
-            <span>⚙️</span>
-            <span className="text-sm">Settings</span>
-          </button>
-        </div>
-
-        {/* SIGN OUT */}
-        <div className="mt-auto p-5">
-          <button
-            onClick={() => navigate("/")}
-            className="flex items-center gap-4 text-gray-700 hover:text-red-600 text-sm"
-          >
-            <span> ↪️</span>
-            Sign Out
-          </button>
-        </div>
-      </aside>
-
+    <>
       {/* MAIN AREA */}
-      <div className="flex-1">
-
-        {/* TOP BAR */}
-        <header className="h-[82px] bg-white border-b flex items-center justify-end px-7">
-
-          <button
-            onClick={() => setShowNotification(!showNotification)}
-            className="text-gray-600 text-xl hover:text-blue-600"
-          >
-            ♧
-          </button>
-
-          <div className="h-7 border-l mx-6"></div>
-
-          <button
-            onClick={() => setShowAdmin(!showAdmin)}
-            className="flex items-center gap-3 hover:bg-gray-50 px-3 py-2 rounded-lg"
-          >
-            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-              👨
-            </div>
-
-            <span className="text-sm font-medium">
-              Admin User
-            </span>
-          </button>
-
-          {showNotification && (
-            <div className="absolute right-36 top-16 bg-white border rounded-lg shadow-lg p-4 w-64 z-50">
-              <p className="font-semibold mb-2">Notifications</p>
-              <p className="text-sm text-gray-500">
-                No new notifications.
-              </p>
-            </div>
-          )}
-
-          {showAdmin && (
-            <div className="absolute right-6 top-16 bg-white border rounded-lg shadow-lg p-3 w-44 z-50">
-              <button className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded">
-                Profile
-              </button>
-
-              <button
-                onClick={() => menuClick("Settings")}
-                className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded"
-              >
-                Settings
-              </button>
-
-              <button
-                onClick={() => navigate("/")}
-                className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-red-600"
-              >
-                  ↪️Sign Out
-              </button>
-            </div>
-          )}
-        </header>
+      <div >
 
         {/* CONTENT */}
         <main className="p-7">
@@ -318,11 +176,10 @@ function UserManagement() {
                   <div className="flex items-center gap-3">
 
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
-                        index === 0
-                          ? "bg-blue-600 text-white"
-                          : "bg-blue-100 text-blue-700"
-                      }`}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${index === 0
+                        ? "bg-blue-600 text-white"
+                        : "bg-blue-100 text-blue-700"
+                        }`}
                     >
                       {user.initials}
                     </div>
@@ -343,14 +200,13 @@ function UserManagement() {
                     {user.role}
                   </div>
 
-                    {/* STATUS */}
+                  {/* STATUS */}
                   <div>
                     <span
-                      className={`text-sm ${
-                        user.status === "Active"
-                          ? "text-emerald-600"
-                          : "text-gray-500"
-                      }`}
+                      className={`text-sm ${user.status === "Active"
+                        ? "text-emerald-600"
+                        : "text-gray-500"
+                        }`}
                     >
                       ● {user.status}
                     </span>
@@ -443,23 +299,22 @@ function UserManagement() {
                       {selectedUser.email}
                     </p>
                     <button
-                     onClick={() =>
-                      alert(
-                        selectedUser.status === "Active"
-                         ? "Account is Active"
-                         : "Account is Inactive"
-                       )
+                      onClick={() =>
+                        alert(
+                          selectedUser.status === "Active"
+                            ? "Account is Active"
+                            : "Account is Inactive"
+                        )
                       }
-                      className={`mt-3 text-sm font-medium ${
-                        selectedUser.status === "Active"
-                         ? "text-emerald-600"
+                      className={`mt-3 text-sm font-medium ${selectedUser.status === "Active"
+                        ? "text-emerald-600"
                         : "text-gray-500"
-                      }`}
+                        }`}
                     >
-                       ● {selectedUser.status} Account
+                      ● {selectedUser.status} Account
                     </button>
 
-                 
+
                   </div>
 
                   <div className="px-7">
@@ -514,7 +369,7 @@ function UserManagement() {
 
                     <button
                       onClick={() =>
-                        alert("Editing" +selectedUser.name)
+                        alert("Editing" + selectedUser.name)
                       }
                       className="w-full border rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50"
                     >
@@ -593,7 +448,7 @@ function UserManagement() {
         </div>
       )}
 
-    </div>
+    </>
   );
 }
 
