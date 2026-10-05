@@ -1,6 +1,8 @@
 import { type Request, type Response } from 'express';
+import mongoose from 'mongoose';
 import AuditLog from '../models/AuditLog.ts';
 import Patient from '../models/Patients.ts';
+import { chatSession } from '../models/chatSession.ts';
 
 export const getSystemStats = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -37,4 +39,42 @@ export const getSystemStats = async (req: Request, res: Response): Promise<void>
         console.error('Error in getSystemStats:', error);
         res.status(500).json({ success: false, message: 'Server Error fetching stats' });
     }
+};
+
+export const getHealthStats = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // 1. Overall Status
+        const dbStatus = mongoose.connection.readyState;
+        const isOperational = dbStatus === 1;
+
+        // 2. AI Inference Usage (Simulated credits based on chat sessions)
+        const sessions = await chatSession.getAllSessions();
+        let totalMessages = 0;
+        sessions.forEach((s: any) => {
+            totalMessages += s.history?.length || 0;
+        });
+        const aiUsage = totalMessages > 0 ? (totalMessages * 0.1).toFixed(1) : "0.0"; // e.g., 0.1k requests
+
+        // 3. Database Load
+        // We'll simulate a random load percentage between 10% and 40% when operational
+        // Or if you want a real metric, you can use mongoose stats, but this is simpler for the UI
+        const dbLoad = isOperational ? Math.floor(Math.random() * 30) + 10 : 100;
+
+        res.status(200).json({
+            success: true,
+            health: {
+                status: isOperational ? 'Operational' : 'Degraded',
+                aiUsage: `${aiUsage} k req/s`,
+                aiCredits: 1000 - (totalMessages * 2), // Mock credit remaining
+                dbLoad: `${dbLoad}%`
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching health stats:', error);
+        res.status(500).json({ success: false, message: 'Server Error fetching health stats' });
+    }
+};
+
+export const ping = (req: Request, res: Response) => {
+    res.status(200).json({ success: true, timestamp: Date.now() });
 };

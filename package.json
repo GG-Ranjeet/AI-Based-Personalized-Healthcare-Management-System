@@ -13,6 +13,7 @@
     "concurrently": "^9.1.2"
   },
   "dependencies": {
-    "react-markdown": "^10.1.0"
+    "react-markdown": "^10.1.0",
+    "react-native-vector-icons": "^10.3.0"
   }
 }

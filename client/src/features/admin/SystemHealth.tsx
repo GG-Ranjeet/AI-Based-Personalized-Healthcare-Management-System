@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { CheckCircle2, Activity, Settings2, AlertTriangle, FileText, Search } from "lucide-react";
 
 function SystemHealth() {
 
@@ -7,6 +8,47 @@ function SystemHealth() {
   const [timeFilter, setTimeFilter] = useState("Last 24 Hours");
   const [page, setPage] = useState(1);
   const [logs, setLogs] = useState<any[]>([]);
+  const [health, setHealth] = useState({
+    status: "Operational",
+    aiUsage: "0.0 k req/s",
+    aiCredits: 1000,
+    dbLoad: "10%"
+  });
+  const [latency, setLatency] = useState<number | null>(() => {
+    const saved = localStorage.getItem('lastPing');
+    return saved ? parseInt(saved) : null;
+  });
+
+  const fetchHealth = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch("/api/status/health", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setHealth(data.health);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const pingApi = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const start = Date.now();
+      await fetch("/api/status/ping", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const end = Date.now();
+      const latencyMs = end - start;
+      setLatency(latencyMs);
+      localStorage.setItem('lastPing', latencyMs.toString());
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -24,6 +66,7 @@ function SystemHealth() {
       }
     };
     fetchLogs();
+    fetchHealth();
   }, []);
 
   const filteredLogs = logs.filter((log) => {
@@ -94,12 +137,12 @@ function SystemHealth() {
             </div>
 
             <div className="text-[17px] font-bold mt-2">
-              Operational
+              {health.status}
             </div>
           </div>
 
           <div className="w-9 h-9 rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[18px]">
-            ✓
+            <CheckCircle2 size={18} />
           </div>
 
         </div>
@@ -113,16 +156,20 @@ function SystemHealth() {
             </div>
 
             <div className="text-[17px] font-bold mt-2">
-              42
+              {latency === null ? "--" : latency}
               <span className="text-[10px] text-gray-500 ml-1">
                 ms
               </span>
             </div>
           </div>
 
-          <div className="w-9 h-9 rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[16px]">
-            ◔
-          </div>
+          <button 
+            onClick={pingApi}
+            className="w-9 h-9 rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[16px] hover:bg-[#c1ead6] transition active:scale-95 cursor-pointer"
+            title="Ping API"
+          >
+            <Activity size={18} />
+          </button>
 
         </div>
 
@@ -135,15 +182,15 @@ function SystemHealth() {
             </div>
 
             <div className="text-[17px] font-bold mt-2">
-              1.2
-              <span className="text-[10px] text-gray-500 ml-1">
-                k req/s
+              {health.aiUsage}
+              <span className="text-[10px] text-gray-500 ml-1 block mt-0.5">
+                {health.aiCredits} Credits Remaining
               </span>
             </div>
           </div>
 
           <div className="w-9 h-9 rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[15px]">
-            ⚙️
+            <Settings2 size={18} />
           </div>
 
         </div>
@@ -157,7 +204,7 @@ function SystemHealth() {
             </div>
 
             <div className="text-[17px] font-bold text-[#b0444c] mt-2">
-              78
+              {health.dbLoad}
               <span className="text-[10px] ml-1">
                 %
               </span>
@@ -165,7 +212,7 @@ function SystemHealth() {
           </div>
 
           <div className="w-9 h-9 rounded-full bg-[#ffe1e1] text-[#d95c5c] flex items-center justify-center text-[16px]">
-            ⚠️
+            <AlertTriangle size={18} />
           </div>
 
         </div>
@@ -181,7 +228,7 @@ function SystemHealth() {
           <div className="flex items-center gap-2">
 
             <span className="text-[#2162c4] text-[18px]">
-              ▤
+              <FileText size={20} />
             </span>
 
             <span className="text-[16px] font-bold">
@@ -195,8 +242,8 @@ function SystemHealth() {
             {/* SEARCH */}
             <div className="relative">
 
-              <span className="absolute left-2.5 top-2.25 text-gray-400 text-[13px]">
-                ⌕
+              <span className="absolute left-2.5 top-2.5 text-gray-400">
+                <Search size={14} />
               </span>
 
               <input

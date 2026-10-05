@@ -1,66 +1,114 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Plus, Search, Filter, Edit2, X } from "lucide-react";
 
 type User = {
+  _id: string;
   name: string;
   email: string;
   role: string;
   department: string;
   status: string;
-  lastLogin: string;
+  lastLogin?: string;
   twoFA: string;
-  initials: string;
+  initials?: string;
+  avatarUrl?: string;
+  createdAt?: string;
 };
 
 function UserManagement() {
 
   const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<User | null>({
-    name: "Dr. Sarah Jenkins",
-    email: "s.jenkins@aegis.health",
-    role: "Doctor",
-    department: "Cardiology, Main Campus",
-    status: "Active",
-    lastLogin: "2 hours ago",
-    twoFA: "Enabled",
-    initials: "SJ",
-  });
-
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showFilter, setShowFilter] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
   const [page, setPage] = useState(1);
+  const [users, setUsers] = useState<User[]>([]);
 
-  const users = [
-    {
-      name: "Dr. Sarah Jenkins",
-      email: "s.jenkins@aegis.health",
-      role: "Doctor",
-      status: "Active",
-      lastLogin: "2 hours ago",
-      initials: "SJ",
-      department: "Cardiology, Main Campus",
-      twoFA: "Enabled",
-    },
-    {
-      name: "Marcus Reed",
-      email: "m.reed@patient.aegis",
-      role: "Patient",
-      status: "Active",
-      lastLogin: "Yesterday",
-      initials: "MR",
-      department: "General",
-      twoFA: "Enabled",
-    },
-    {
-      name: "James Chen",
-      email: "j.chen@aegis.health",
-      role: "Admin",
-      status: "Inactive",
-      lastLogin: "Oct 12, 2023",
-      initials: "JC",
-      department: "Administration",
-      twoFA: "Disabled",
-    },
-  ];
+  // Add User Form State
+  const [newUser, setNewUser] = useState({
+    name: "",
+    email: "",
+    role: "Patient"
+  });
+
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch("/api/users", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Compute initials and format date for UI
+        const mappedUsers = data.users.map((u: any) => ({
+          ...u,
+          initials: u.name.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase(),
+          lastLogin: u.lastLogin ? new Date(u.lastLogin).toLocaleString() : "Never",
+          twoFA: u.twoFA || "Disabled",
+          department: u.department || "General",
+          role: u.role.charAt(0).toUpperCase() + u.role.slice(1) // capitalize role
+        }));
+        setUsers(mappedUsers);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleAddUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role.toLowerCase()
+        })
+      });
+      if (res.ok) {
+        alert("User Added Successfully");
+        setShowAddUser(false);
+        setNewUser({ name: "", email: "", role: "Patient" });
+        fetchUsers();
+      } else {
+        alert("Failed to add user");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const toggleUserStatus = async (user: User) => {
+    const newStatus = user.status === "Active" ? "Inactive" : "Active";
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/users/${user._id}`, {
+        method: "PUT",
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        fetchUsers();
+        if (selectedUser && selectedUser._id === user._id) {
+            setSelectedUser({ ...selectedUser, status: newStatus });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const filteredUsers = users.filter(
     (user) =>
@@ -94,9 +142,9 @@ function UserManagement() {
 
             <button
               onClick={() => setShowAddUser(true)}
-              className="bg-[#3265ad] hover:bg-[#285796] text-white px-5 py-2.5 rounded-lg text-sm font-medium"
+              className="bg-[#3265ad] hover:bg-[#285796] text-white px-5 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2"
             >
-              + Add User
+              <Plus size={16} /> Add User
             </button>
           </div>
 
@@ -111,8 +159,8 @@ function UserManagement() {
 
                 <div className="flex-1 relative">
 
-                  <span className="absolute left-4 top-3 text-gray-400">
-                    🔍
+                  <span className="absolute left-4 top-2.5 text-gray-400">
+                    <Search size={16} />
                   </span>
 
                   <input
@@ -126,9 +174,9 @@ function UserManagement() {
 
                 <button
                   onClick={() => setShowFilter(!showFilter)}
-                  className="px-5 border rounded-lg text-sm hover:bg-gray-50"
+                  className="px-5 border rounded-lg text-sm hover:bg-gray-50 flex items-center gap-2"
                 >
-                  ⚱️ Filter
+                  <Filter size={14} /> Filter
                 </button>
               </div>
 
@@ -171,7 +219,7 @@ function UserManagement() {
               {filteredUsers.map((user, index) => (
 
                 <div
-                  key={index}
+                  key={user._id || index}
                   onClick={() => openUser(user)}
                   className="grid grid-cols-[50px_2fr_1fr_1fr_1fr_1fr] items-center px-5 py-5 border-b hover:bg-blue-50 cursor-pointer transition"
                 >
@@ -184,12 +232,16 @@ function UserManagement() {
                   <div className="flex items-center gap-3">
 
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${index === 0
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold overflow-hidden ${index === 0
                         ? "bg-blue-600 text-white"
                         : "bg-blue-100 text-blue-700"
                         }`}
                     >
-                      {user.initials}
+                      {user.avatarUrl ? (
+                        <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        user.initials
+                      )}
                     </div>
 
                     <div>
@@ -245,7 +297,7 @@ function UserManagement() {
               <div className="flex items-center justify-between px-5 py-4">
 
                 <p className="text-sm text-gray-500">
-                  Showing 1-10 of 12,450 users
+                  Showing {filteredUsers.length} users
                 </p>
 
                 <div className="flex gap-2">
@@ -282,9 +334,9 @@ function UserManagement() {
 
                 <button
                   onClick={() => setSelectedUser(null)}
-                  className="text-gray-500 hover:text-red-500 text-xl"
+                  className="text-gray-400 hover:text-red-500 transition"
                 >
-                  ×
+                  <X size={24} />
                 </button>
               </div>
 
@@ -295,8 +347,12 @@ function UserManagement() {
                   {/* PROFILE */}
                   <div className="p-7 text-center">
 
-                    <div className="w-16 h-16 rounded-full bg-blue-600 text-white mx-auto flex items-center justify-center text-lg font-semibold">
-                      {selectedUser.initials}
+                    <div className="w-16 h-16 rounded-full bg-blue-600 text-white mx-auto flex items-center justify-center text-lg font-semibold overflow-hidden">
+                      {selectedUser.avatarUrl ? (
+                        <img src={selectedUser.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        selectedUser.initials
+                      )}
                     </div>
 
                     <h3 className="font-bold text-lg mt-4">
@@ -307,16 +363,10 @@ function UserManagement() {
                       {selectedUser.email}
                     </p>
                     <button
-                      onClick={() =>
-                        alert(
-                          selectedUser.status === "Active"
-                            ? "Account is Active"
-                            : "Account is Inactive"
-                        )
-                      }
-                      className={`mt-3 text-sm font-medium ${selectedUser.status === "Active"
-                        ? "text-emerald-600"
-                        : "text-gray-500"
+                      onClick={() => toggleUserStatus(selectedUser)}
+                      className={`mt-3 text-sm font-medium px-3 py-1 rounded-full border ${selectedUser.status === "Active"
+                        ? "text-emerald-600 bg-emerald-50 border-emerald-200 hover:bg-emerald-100"
+                        : "text-gray-500 bg-gray-50 border-gray-200 hover:bg-gray-100"
                         }`}
                     >
                       ● {selectedUser.status} Account
@@ -377,11 +427,11 @@ function UserManagement() {
 
                     <button
                       onClick={() =>
-                        alert("Editing" + selectedUser.name)
+                        alert("Editing user is currently in development")
                       }
-                      className="w-full border rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50"
+                      className="w-full border rounded-lg py-2.5 text-sm font-medium hover:bg-gray-50 flex items-center justify-center gap-2"
                     >
-                      ✎ Edit User
+                      <Edit2 size={16} /> Edit User
                     </button>
 
                   </div>
@@ -416,34 +466,39 @@ function UserManagement() {
 
               <button
                 onClick={() => setShowAddUser(false)}
-                className="text-gray-500 text-xl"
+                className="text-gray-400 hover:text-red-500 transition"
               >
-                ×
+                <X size={24} />
               </button>
 
             </div>
 
             <input
               placeholder="Full Name"
+              value={newUser.name}
+              onChange={(e) => setNewUser({...newUser, name: e.target.value})}
               className="w-full border rounded-lg px-4 py-3 mb-3 outline-none"
             />
 
             <input
               placeholder="Email"
+              value={newUser.email}
+              onChange={(e) => setNewUser({...newUser, email: e.target.value})}
               className="w-full border rounded-lg px-4 py-3 mb-3 outline-none"
             />
 
-            <select className="w-full border rounded-lg px-4 py-3 mb-5">
+            <select 
+              className="w-full border rounded-lg px-4 py-3 mb-5"
+              value={newUser.role}
+              onChange={(e) => setNewUser({...newUser, role: e.target.value})}
+            >
               <option>Doctor</option>
               <option>Patient</option>
               <option>Admin</option>
             </select>
 
             <button
-              onClick={() => {
-                alert("User Added Successfully");
-                setShowAddUser(false);
-              }}
+              onClick={handleAddUser}
               className="w-full bg-blue-600 text-white py-3 rounded-lg"
             >
               Add User

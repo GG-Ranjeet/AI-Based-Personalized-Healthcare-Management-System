@@ -27,6 +27,23 @@ const PatientSchema = new Schema(
             type: String,
             enum: ['patient', 'doctor',  'admin'],
             default: 'patient'
+        },
+        department: {
+            type: String,
+            default: 'General'
+        },
+        status: {
+            type: String,
+            enum: ['Active', 'Inactive'],
+            default: 'Active'
+        },
+        lastLogin: {
+            type: Date
+        },
+        twoFA: {
+            type: String,
+            enum: ['Enabled', 'Disabled'],
+            default: 'Disabled'
         }
     },
     {

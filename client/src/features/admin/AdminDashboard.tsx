@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { TrendingUp, X } from "lucide-react";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -98,8 +99,8 @@ function AdminDashboard() {
               {stats.uptime}
             </h2>
 
-            <p className="text-xs text-green-600 mt-1">
-              ↗️ +0.1% from last month
+            <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+              <TrendingUp size={12} /> +0.1% from last month
             </p>
           </div>
 
@@ -112,8 +113,8 @@ function AdminDashboard() {
               {stats.activeUsers}
             </h2>
 
-            <p className="text-xs text-green-600 mt-1">
-              ↗️ real-time count
+            <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+              <TrendingUp size={12} /> real-time count
             </p>
           </div>
 
@@ -176,7 +177,7 @@ function AdminDashboard() {
                         className="text-red-400 opacity-0 group-hover:opacity-100 hover:text-red-600 transition"
                         title="Delete this log"
                       >
-                        ✕
+                        <X size={14} />
                       </button>
                     </div>
                   </div>

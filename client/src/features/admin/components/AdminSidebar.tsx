@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import AdminMenu from "./AdminMenu";
+import { Headset, LogOut } from "lucide-react";
 
 const AdminSidebar = () => {
 
@@ -110,16 +111,16 @@ const AdminSidebar = () => {
 
           <button
             onClick={() => navigate("/support")}
-            className="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50"
+            className="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 flex items-center gap-3"
           >
-            🎧 &nbsp; Support
+            <Headset size={18} /> Support
           </button>
 
           <button
             onClick={() => navigate("/")}
-            className="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50"
+            className="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 flex items-center gap-3"
           >
-            ↪️ &nbsp; Sign Out
+            <LogOut size={18} /> Sign Out
           </button>
 
         </div>

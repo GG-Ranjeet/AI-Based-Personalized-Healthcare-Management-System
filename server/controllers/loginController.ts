@@ -64,6 +64,9 @@ export const loginController = async (req: Request, res: Response): Promise<void
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
+        // Update the lastLogin field
+        await Patient.findByIdAndUpdate(patient._id, { lastLogin: new Date() });
+
         res.status(200).json({ success: true, message: 'Login successful', patient: payload, token: accessToken });
 
     } catch (error) {
