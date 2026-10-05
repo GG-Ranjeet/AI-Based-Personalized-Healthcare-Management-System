@@ -68,6 +68,7 @@ const continueChat = async (req: express.Request, res: express.Response) => {
 
     // Extract the newly updated history (which now includes the latest exchange)
     const updatedHistory = await chat.getHistory();
+    
 
     // Save the updated history array back to your database
     await chatSession.updateSessionHistory(sessionId, updatedHistory);
