@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { MoreVertical, Trash2, Edit2, Pin, Save, Share2, Stethoscope, User, AlertTriangle, RefreshCw } from "lucide-react";
 // import { analyzePatientInput } from '../services/aiEngine';
 import "./chatView.css";
 import ReactMarkdown from "react-markdown";
@@ -8,6 +9,14 @@ export default function ChatView({ messages, setMessages }: any) {
     const [isTyping, setIsTyping] = useState(false);
     const [sessionId, setSessionId] = useState(() => localStorage.getItem("health_app_chat_session"));
     const chatBottomRef = useRef<any>(null);
+    const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = () => setActiveMenuId(null);
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, []);
 
     const [sessionsList, setSessionsList] = useState<any[]>([]);
 
@@ -55,6 +64,65 @@ export default function ChatView({ messages, setMessages }: any) {
                 text: `Hello! I am your **AI Healthcare Recommendation Assistant**.\n\nDescribe how you are feeling or what symptoms you have (e.g., *"I have a high fever and headache"*). I will analyze your symptoms, estimate risk level, and recommend the right doctor department & first-aid steps.`,
             },
         ]);
+    };
+
+    const handleDeleteSession = async (id: string) => {
+        try {
+            await fetch(`/api/chat/sessions/${id}`, { method: 'DELETE' });
+            if (id === sessionId) {
+                startNewSession();
+            }
+            fetchSessions();
+        } catch (e) {
+            console.error("Error deleting session", e);
+        }
+    };
+
+    const handleRenameSession = async (id: string, currentTitle: string) => {
+        const newTitle = prompt("Enter new session name:", currentTitle);
+        if (newTitle && newTitle.trim() !== "") {
+            try {
+                await fetch(`/api/chat/sessions/${id}/rename`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: newTitle.trim() })
+                });
+                fetchSessions();
+            } catch (e) {
+                console.error("Error renaming session", e);
+            }
+        }
+    };
+
+    const handlePinSession = async (id: string, currentPinStatus: boolean) => {
+        try {
+            await fetch(`/api/chat/sessions/${id}/pin`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isPinned: !currentPinStatus })
+            });
+            fetchSessions();
+        } catch (e) {
+            console.error("Error pinning session", e);
+        }
+    };
+
+    const handleSaveTranscript = (id: string) => {
+        // Download transcript as text file
+        const textToSave = messages.map((m: any) => `${m.sender === 'bot' ? 'AI Assistant' : 'User'}: ${m.text}`).join('\n\n');
+        const blob = new Blob([textToSave], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Consultation_Transcript_${id}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const handleShareSession = (id: string) => {
+        // Mock share for now
+        alert(`Sharing session link for ${id} (link copied to clipboard)`);
+        navigator.clipboard.writeText(`http://localhost:5173/dashboard/chat?session=${id}`);
     };
 
     useEffect(() => {
@@ -175,12 +243,14 @@ export default function ChatView({ messages, setMessages }: any) {
                 </div>
                 <div style={{ flex: 1, overflowY: "auto" }}>
                     {sessionsList.map((session) => {
-                        const previewText = session.history?.find((h: any) => h.role === "user")?.parts[0]?.text || "New Chat";
+                        const defaultPreview = session.history?.find((h: any) => h.role === "user")?.parts[0]?.text || "New Chat";
+                        const previewText = session.title || defaultPreview;
                         const isSelected = sessionId === session.sessionId;
                         return (
                             <div
                                 key={session.sessionId}
                                 onClick={() => loadSession(session.sessionId)}
+                                className="group relative"
                                 style={{
                                     padding: "16px",
                                     borderBottom: "1px solid var(--border-color)",
@@ -189,21 +259,59 @@ export default function ChatView({ messages, setMessages }: any) {
                                     borderLeft: isSelected ? "4px solid var(--accent-color)" : "4px solid transparent",
                                 }}
                             >
-                                <div
-                                    style={{
-                                        fontSize: "14px",
-                                        fontWeight: "600",
-                                        color: "var(--text-primary)",
-                                        whiteSpace: "nowrap",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                    }}
-                                >
-                                    {previewText}
+                                <div className="flex justify-between items-start gap-2">
+                                    <div
+                                        style={{
+                                            fontSize: "14px",
+                                            fontWeight: "600",
+                                            color: "var(--text-primary)",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            flex: 1
+                                        }}
+                                    >
+                                        {previewText}
+                                    </div>
+                                    <div className="relative">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setActiveMenuId(activeMenuId === session.sessionId ? null : session.sessionId);
+                                            }}
+                                            className="p-1 hover:bg-gray-200 rounded text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <MoreVertical size={16} />
+                                        </button>
+                                        
+                                        {activeMenuId === session.sessionId && (
+                                            <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-xl border border-gray-200 z-[100] py-1" onClick={e => e.stopPropagation()}>
+                                                <button className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700" onClick={() => { setActiveMenuId(null); handleRenameSession(session.sessionId, previewText); }}>
+                                                    <Edit2 size={14} /> Rename
+                                                </button>
+                                                <button className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700" onClick={() => { setActiveMenuId(null); handlePinSession(session.sessionId, session.isPinned); }}>
+                                                    <Pin size={14} className={session.isPinned ? "fill-current text-blue-600" : ""} /> {session.isPinned ? "Unpin" : "Pin"}
+                                                </button>
+                                                <button className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700" onClick={() => { setActiveMenuId(null); handleSaveTranscript(session.sessionId); }}>
+                                                    <Save size={14} /> Save
+                                                </button>
+                                                <button className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-gray-700" onClick={() => { setActiveMenuId(null); handleShareSession(session.sessionId); }}>
+                                                    <Share2 size={14} /> Share
+                                                </button>
+                                                <div className="border-t border-gray-100 my-1"></div>
+                                                <button className="w-full text-left px-3 py-2 hover:bg-red-50 flex items-center gap-2 text-sm text-red-600" onClick={() => { setActiveMenuId(null); handleDeleteSession(session.sessionId); }}>
+                                                    <Trash2 size={14} /> Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <div style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "6px" }}>
-                                    {new Date(session.updatedAt).toLocaleDateString()}{" "}
-                                    {new Date(session.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                <div className="flex items-center gap-2 mt-1">
+                                    {session.isPinned && <Pin size={12} className="fill-current text-blue-600 shrink-0" />}
+                                    <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                                        {new Date(session.updatedAt).toLocaleDateString()}{" "}
+                                        {new Date(session.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                    </div>
                                 </div>
                             </div>
                         );
@@ -211,11 +319,15 @@ export default function ChatView({ messages, setMessages }: any) {
                 </div>
             </div>
 
-            <div className="chat-container">
+            <div className="chat-container relative">
+                {/* Removed top header menu as it was moved to sidebar */}
+
                 <div className="chat-messages">
                     {messages.map((msg: any, index: any) => (
                         <div key={index} className={`message ${msg.sender}-message`}>
-                            <div className="avatar">{msg.sender === "bot" ? "🩺" : "👤"}</div>
+                            <div className={`avatar flex items-center justify-center rounded-full text-white ${msg.sender === 'bot' ? 'bg-blue-600' : 'bg-gray-400'}`}>
+                                {msg.sender === "bot" ? <Stethoscope size={18} /> : <User size={18} />}
+                            </div>
                             <div className={`message-content ${msg.sender === "bot" ? "ai-message" : ""}`}>
                                 {msg.sender === "bot" ? (
                                     <ReactMarkdown>{msg.text}</ReactMarkdown>
@@ -234,7 +346,7 @@ export default function ChatView({ messages, setMessages }: any) {
                                             alignItems: "flex-end",
                                         }}
                                     >
-                                        <span>⚠️ {msg.errorMessage}</span>
+                                        <span className="flex items-center gap-1"><AlertTriangle size={14} /> {msg.errorMessage}</span>
                                         <button
                                             onClick={() => sendToBot(msg.text, messages)}
                                             style={{
@@ -249,7 +361,7 @@ export default function ChatView({ messages, setMessages }: any) {
                                                 gap: "4px",
                                             }}
                                         >
-                                            <span>🔄</span> Resend
+                                            <RefreshCw size={14} /> Resend
                                         </button>
                                     </div>
                                 )}
@@ -259,7 +371,7 @@ export default function ChatView({ messages, setMessages }: any) {
 
                     {isTyping && (
                         <div className="message bot-message">
-                            <div className="avatar">🩺</div>
+                            <div className="avatar flex items-center justify-center rounded-full bg-blue-600 text-white"><Stethoscope size={18} /></div>
                             <div className="message-content">
                                 <div className="typing-dots">
                                     <span className="typing-dot"></span>
@@ -303,8 +415,8 @@ export default function ChatView({ messages, setMessages }: any) {
                             Send
                         </button>
                     </form>
-                    <div className="disclaimer">
-                        ⚠️ Disclaimer: This tool provides preliminary health guidance only and is not a substitute for professional medical diagnosis.
+                    <div className="disclaimer flex items-center gap-1">
+                        <AlertTriangle size={14} className="text-yellow-600" /> Disclaimer: This tool provides preliminary health guidance only and is not a substitute for professional medical diagnosis.
                     </div>
                 </footer>
             </div>

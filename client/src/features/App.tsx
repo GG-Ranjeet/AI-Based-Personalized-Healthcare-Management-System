@@ -2,6 +2,7 @@ import "./App.css";
 import Example from "./component/Example";
 import LoginForm from "./auth/LoginForm";
 import Dashboard from "./dashboard/patient";
+import { useEffect, useState } from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignupForm from "./auth/SignupForm";
@@ -9,14 +10,15 @@ import ForgotPassword from "./auth/ForgotPassword";
 import { Home } from "./component/Home";
 import ProtectedRoute from "./component/utils/ProtectedRoute";
 import DashboardViewOld from "./dashboard/patient_dashboard";
-import { useEffect, useState } from "react";
+import DoctorsView from "./dashboard/DoctorsView";
 import ChatViewOld from "./dashboard/chatView";
+import EmergencyViewOld from "./dashboard/EmergencyView";
+import SettingsViewOld from "./dashboard/SettingsView";
 
 // Teammate Patient Components
 import PatientLayout from "./patient/PatientLayout";
 import DashboardView from "./patient/DashboardView";
 import ChatView from "./patient/ChatView";
-import DoctorsView from "./patient/DoctorsView";
 import AppointmentsView from "./patient/AppointmentsView";
 import DepartmentsView from "./patient/DepartmentsView";
 import EmergencyView from "./patient/EmergencyView";
@@ -25,7 +27,6 @@ import RemediesView from "./patient/RemediesView";
 
 // Teammate Admin Components
 import AdminLayout from "./admin/AdminLayout";
-import AdminLogin from "./admin/AdminLogin";
 import AdminDashboard from "./admin/AdminDashboard";
 import UserManagement from "./admin/UserManagement";
 import Analytics from "./admin/Analytics";
@@ -106,7 +107,10 @@ function App() {
                             <Route index element={<DashboardViewOld appointments={appointments} patientInfo={patientInfo} />} />
                             <Route path="chat" element={<ChatViewOld messages={messages} setMessages={setMessages} />} />
                             <Route path="appointment" element={<AppointmentsView appointments={appointments} onCancelAppointment={handleCancelAppointment} />} />
+                            <Route path="doctors" element={<DoctorsView onBookAppointment={handleBookAppointment} />} />
                             <Route path="example" element={<Example />} />
+                            <Route path="emergency" element={<EmergencyViewOld />} />
+                            <Route path="settings" element={<SettingsViewOld />} />
                         </Route>
 
                         {/* New Patient Routes */}

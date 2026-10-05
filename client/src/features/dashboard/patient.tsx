@@ -45,7 +45,7 @@ const patient: React.FC = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Data for the user context see data.user specifically : ",data);
+                    console.log("Data for the user context see data.user specifically : ", data);
                     setUser(data.user);
 
                     // Update Header's patientInfo with backend data

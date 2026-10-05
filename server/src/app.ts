@@ -10,6 +10,8 @@ import aiRecommenderRoute from "../routes/aiRecommenderRoute.ts";
 import medicineRoute from "../routes/medicineRoute.ts";
 import auditRoute from "../routes/auditRoute.ts";
 import userRoutes from "../routes/userRoutes.ts";
+import appointmentRoute from "../routes/appointmentRoute.ts";
+import doctorRoute from "../routes/doctorRoute.ts";
 
 const app: Express = express();
 app.use(express.json());
@@ -24,6 +26,8 @@ app.use("/api/dashboard", authenticateToken, dashboardRoute);
 app.use("/api/medicine", medicineRoute); 
 app.use("/api/audit", auditRoute);
 app.use("/api/users", userRoutes);
+app.use("/api/appointments", appointmentRoute);
+app.use("/api/doctors", doctorRoute);
 
 app.use((req, res) => {
     res.status(404).json({

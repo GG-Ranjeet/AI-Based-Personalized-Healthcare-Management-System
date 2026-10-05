@@ -30,7 +30,7 @@ export default function Header({ patientInfo } : any) {
         <h1 className='text-m font-bold'>{getTitle()}</h1>
         <div className="status-indicator text-sm flex items-center gap-1.5 text-gray-600">
           <span className="status-dot bg-green-500 rounded-full text-m w-2 h-2"></span> 
-          Offline Engine Active
+          Engine Active
         </div>
       </div>
 

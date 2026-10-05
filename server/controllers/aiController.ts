@@ -111,4 +111,24 @@ const getSessionHistory = async (req: express.Request, res: express.Response) =>
     res.json({ history });
 }
 
-export { startNewChat, continueChat, getSessions, getSessionHistory };
+const deleteSession = async (req: express.Request, res: express.Response) => {
+    const sessionId = req.params.sessionId as string;
+    await chatSession.deleteSession(sessionId);
+    res.json({ success: true, message: "Session deleted" });
+}
+
+const renameSession = async (req: express.Request, res: express.Response) => {
+    const sessionId = req.params.sessionId as string;
+    const { title } = req.body;
+    await chatSession.renameSession(sessionId, title);
+    res.json({ success: true, message: "Session renamed" });
+}
+
+const pinSession = async (req: express.Request, res: express.Response) => {
+    const sessionId = req.params.sessionId as string;
+    const { isPinned } = req.body;
+    await chatSession.pinSession(sessionId, isPinned);
+    res.json({ success: true, message: "Session pin status updated" });
+}
+
+export { startNewChat, continueChat, getSessions, getSessionHistory, deleteSession, renameSession, pinSession };

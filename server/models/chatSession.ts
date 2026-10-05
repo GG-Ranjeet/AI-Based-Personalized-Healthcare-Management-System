@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 const ChatSessionSchema = new mongoose.Schema({
     sessionId: { type: String, required: true, unique: true },
+    title: { type: String, default: null }, // Optional custom title
+    isPinned: { type: Boolean, default: false },
     history: { type: Array, default: [] }, // Stores the Gemini history array directly
     updatedAt: { type: Date, default: Date.now }
 });
@@ -25,8 +27,25 @@ export const chatSession = {
         return session;
     },
     async getAllSessions() {
-        return await ChatSession.find({}, { sessionId: 1, updatedAt: 1, history: 1 })
-            .sort({ updatedAt: -1 })
+        return await ChatSession.find({}, { sessionId: 1, title: 1, isPinned: 1, updatedAt: 1, history: 1 })
+            .sort({ isPinned: -1, updatedAt: -1 }) // Pinned first, then newest
             .lean();
+    },
+    async deleteSession(sessionId: string) {
+        return await ChatSession.findOneAndDelete({ sessionId });
+    },
+    async renameSession(sessionId: string, title: string) {
+        return await ChatSession.findOneAndUpdate(
+            { sessionId },
+            { title, updatedAt: new Date() },
+            { new: true }
+        );
+    },
+    async pinSession(sessionId: string, isPinned: boolean) {
+        return await ChatSession.findOneAndUpdate(
+            { sessionId },
+            { isPinned, updatedAt: new Date() },
+            { new: true }
+        );
     }
 }

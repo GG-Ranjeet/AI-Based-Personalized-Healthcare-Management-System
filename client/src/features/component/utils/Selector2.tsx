@@ -7,6 +7,7 @@ interface Selector2Props {
     type?: string;
     alignment?: string;
     className?: string;
+    isMinimized?: boolean;
 }
 
 const Selector2 = ({children, ...props}: Selector2Props): any => {
@@ -17,11 +18,15 @@ const Selector2 = ({children, ...props}: Selector2Props): any => {
                 key={option.id}
                 type="button"
                 onClick={() => props.handler(option.id)}
-                className={`flex-1 flex flex-row items-center justify-center md:justify-start py-2 px-2 rounded-md text-sm font-medium transition-all duration-200 gap-2  ${isSelected ? "bg-blue-50 text-blue-600" : " text-gray-700 hover:bg-white"} `}
+                className={`flex-1 flex flex-row items-center justify-center ${!props.isMinimized ? 'md:justify-start' : ''} py-2 px-2 rounded-md text-sm font-medium transition-all duration-200 gap-2  ${isSelected ? "bg-blue-50 text-blue-600" : " text-gray-700 hover:bg-white"} `}
                 title={option.name}
             >
-                {option.icon && <span className="flex-shrink-0 flex items-center justify-center w-6 h-6" dangerouslySetInnerHTML={{ __html: option.icon }}></span>}
-                <span className="hidden md:block truncate">{option.name}</span>
+                {option.icon && typeof option.icon === 'string' ? (
+                    <span className="flex-shrink-0 flex items-center justify-center w-6 h-6" dangerouslySetInnerHTML={{ __html: option.icon }}></span>
+                ) : (
+                    option.icon && <span className="flex-shrink-0 flex items-center justify-center w-6 h-6">{option.icon}</span>
+                )}
+                <span className={`hidden ${!props.isMinimized ? 'md:block' : ''} truncate`}>{option.name}</span>
             </button>
         );
     };
