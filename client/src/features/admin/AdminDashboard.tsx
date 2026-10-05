@@ -7,7 +7,7 @@ function AdminDashboard() {
     <div>
 
       {/* DASHBOARD CONTENT */}
-      <section className="p-7">
+      <section className="">
 
         <h1 className="text-3xl font-bold text-gray-800">
           System Overview

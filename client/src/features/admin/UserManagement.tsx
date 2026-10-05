@@ -1,9 +1,20 @@
-import { useState, type SetStateAction } from "react";
+import { useState } from "react";
+
+type User = {
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  status: string;
+  lastLogin: string;
+  twoFA: string;
+  initials: string;
+};
 
 function UserManagement() {
 
   const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState({
+  const [selectedUser, setSelectedUser] = useState<User | null>({
     name: "Dr. Sarah Jenkins",
     email: "s.jenkins@aegis.health",
     role: "Doctor",
@@ -58,7 +69,7 @@ function UserManagement() {
       user.role.toLowerCase().includes(search.toLowerCase())
   );
 
-  const openUser = (user: SetStateAction<{ name: string; email: string; role: string; department: string; status: string; lastLogin: string; twoFA: string; initials: string; }>) => {
+  const openUser = (user: User) => {
     setSelectedUser(user);
   };
 
@@ -67,9 +78,6 @@ function UserManagement() {
     <>
       {/* MAIN AREA */}
       <div >
-
-        {/* CONTENT */}
-        <main className="p-7">
 
           {/* TITLE */}
           <div className="flex items-center justify-between mb-7">
@@ -263,7 +271,7 @@ function UserManagement() {
             </div>
 
             {/* USER DETAILS */}
-            <div className="bg-white border rounded-xl shadow-sm min-h-[750px] flex flex-col">
+            <div className="bg-white border rounded-xl shadow-sm min-h-187.5 flex flex-col">
 
               {/* DETAILS HEADER */}
               <div className="flex justify-between items-center p-5 border-b">
@@ -391,8 +399,6 @@ function UserManagement() {
             </div>
 
           </div>
-
-        </main>
       </div>
 
       {/* ADD USER MODAL */}
@@ -400,7 +406,7 @@ function UserManagement() {
 
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
 
-          <div className="bg-white rounded-xl shadow-xl w-[420px] p-6">
+          <div className="bg-white rounded-xl shadow-xl w-105 p-6">
 
             <div className="flex justify-between mb-5">
 

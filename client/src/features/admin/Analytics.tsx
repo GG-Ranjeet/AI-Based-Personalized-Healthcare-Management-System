@@ -27,7 +27,7 @@ function Analytics() {
 
   return (
 
-    <div>
+    <section>
 
       <div className="flex justify-between items-start mb-7">
 
@@ -48,14 +48,14 @@ function Analytics() {
 
           <button
             onClick={csvDownload}
-            className="h-[45px] px-5 bg-white border border-gray-300 rounded-lg text-[#315f9f] text-[12px] font-semibold"
+            className="h-11.25 px-5 bg-white border border-gray-300 rounded-lg text-[#315f9f] text-[12px] font-semibold"
           >
             ↓ Export CSV
           </button>
 
           <button
             onClick={() => window.print()}
-            className="h-[45px] px-5 bg-[#2f61b5] text-white rounded-lg text-[12px] font-semibold"
+            className="h-11.25 px-5 bg-[#2f61b5] text-white rounded-lg text-[12px] font-semibold"
           >
             ▣ Export PDF
           </button>
@@ -333,7 +333,7 @@ function Analytics() {
 
       </div>
 
-    </div>
+    </section>
   );
 }
 

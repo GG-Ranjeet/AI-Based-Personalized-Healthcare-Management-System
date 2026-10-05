@@ -81,7 +81,7 @@ const SidePanel = () => {
             <div className="w-full flex flex-col mt-auto pb-4 gap-2">
                 {/* setting */}
                 <div className="flex flex-row items-center justify-center md:justify-start gap-3 w-full p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors" title="Settings">
-                    <svg width="24px" height="24px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#475569" className="flex-shrink-0">
+                    <svg width="24px" height="24px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#475569" className="shrink-0">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                         <g id="SVGRepo_iconCarrier">
@@ -94,7 +94,7 @@ const SidePanel = () => {
                 </div>
 
                 <div className="flex flex-row items-center justify-center md:justify-start gap-3 w-full p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors" title="Help">
-                    <svg width="24px" height="24px" fill="#475569" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+                    <svg width="24px" height="24px" fill="#475569" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                         <g id="SVGRepo_iconCarrier">

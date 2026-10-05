@@ -6,7 +6,7 @@ function SystemHealth() {
   const [actionType, setActionType] = useState("All Action Types");
   const [timeFilter, setTimeFilter] = useState("Last 24 Hours");
   const [page, setPage] = useState(1);
-  const [refreshing, setRefreshing] = useState(false);
+  // const [refreshing, setRefreshing] = useState(false);
 
   const logs = [
     {
@@ -53,13 +53,13 @@ function SystemHealth() {
   });
 
 
-  const refreshData = () => {
-    setRefreshing(true);
+  // const refreshData = () => {
+  //   setRefreshing(true);
 
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 700);
-  };
+  //   setTimeout(() => {
+  //     setRefreshing(false);
+  //   }, 700);
+  // };
 
   // const exportLogs = () => {
   //   const rows = [
@@ -92,47 +92,15 @@ function SystemHealth() {
 
 
   return (
-    <main className="flex-1">
+    <section>
 
-      {/* HEADER */}
-      <div className="flex items-center justify-between mb-5">
-
-        <div>
-          <div className="text-[23px] font-bold leading-[28px] text-[#172033] whitespace-nowrap">
-            System Health & Audit Logs
-          </div>
-
-          <div className="text-[12px] text-gray-500 mt-1">
-            Monitor server status, AI model performance, and review system activities.
-          </div>
-        </div>
-
-        <div className="flex gap-2.5">
-
-          <button
-            // onClick={exportLogs}
-            className="h-[36px] px-4 bg-white border border-[#d5dbe5] rounded-md text-[11px] font-medium hover:bg-gray-50 whitespace-nowrap"
-          >
-            ⇩ &nbsp; Export Logs
-          </button>
-
-          <button
-            onClick={refreshData}
-            className="h-[36px] px-4 bg-[#2162c4] text-white rounded-md text-[11px] font-semibold hover:bg-[#174fa6] whitespace-nowrap"
-          >
-            ↻ &nbsp;
-            {refreshing ? "Refreshing..." : "Refresh Data"}
-          </button>
-
-        </div>
-
-      </div>
+      
 
       {/* ================= STATUS CARDS ================= */}
       <div className="grid grid-cols-4 gap-4 mb-5">
 
         {/* CARD */}
-        <div className="h-[88px] bg-white border border-[#dfe4eb] rounded-lg px-4 flex items-center justify-between shadow-sm">
+        <div className="h-22 bg-white border border-[#dfe4eb] rounded-lg px-4 flex items-center justify-between shadow-sm">
 
           <div>
             <div className="text-[10px] text-gray-500">
@@ -144,14 +112,14 @@ function SystemHealth() {
             </div>
           </div>
 
-          <div className="w-[36px] h-[36px] rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[18px]">
+          <div className="w-9 h-9 rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[18px]">
             ✓
           </div>
 
         </div>
 
         {/* CARD */}
-        <div className="h-[88px] bg-white border border-[#dfe4eb] rounded-lg px-4 flex items-center justify-between shadow-sm">
+        <div className="h-22 bg-white border border-[#dfe4eb] rounded-lg px-4 flex items-center justify-between shadow-sm">
 
           <div>
             <div className="text-[10px] text-gray-500">
@@ -166,14 +134,14 @@ function SystemHealth() {
             </div>
           </div>
 
-          <div className="w-[36px] h-[36px] rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[16px]">
+          <div className="w-9 h-9 rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[16px]">
             ◔
           </div>
 
         </div>
 
         {/* CARD */}
-        <div className="h-[88px] bg-white border border-[#dfe4eb] rounded-lg px-4 flex items-center justify-between shadow-sm">
+        <div className="h-22 bg-white border border-[#dfe4eb] rounded-lg px-4 flex items-center justify-between shadow-sm">
 
           <div>
             <div className="text-[10px] text-gray-500">
@@ -188,14 +156,14 @@ function SystemHealth() {
             </div>
           </div>
 
-          <div className="w-[36px] h-[36px] rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[15px]">
+          <div className="w-9 h-9 rounded-full bg-[#d7fae9] text-[#20b77a] flex items-center justify-center text-[15px]">
             ⚙️
           </div>
 
         </div>
 
         {/* CARD */}
-        <div className="h-[88px] bg-white border border-[#dfe4eb] rounded-lg px-4 flex items-center justify-between shadow-sm">
+        <div className="h-22 bg-white border border-[#dfe4eb] rounded-lg px-4 flex items-center justify-between shadow-sm">
 
           <div>
             <div className="text-[10px] text-gray-500">
@@ -210,7 +178,7 @@ function SystemHealth() {
             </div>
           </div>
 
-          <div className="w-[36px] h-[36px] rounded-full bg-[#ffe1e1] text-[#d95c5c] flex items-center justify-center text-[16px]">
+          <div className="w-9 h-9 rounded-full bg-[#ffe1e1] text-[#d95c5c] flex items-center justify-center text-[16px]">
             ⚠️
           </div>
 
@@ -222,7 +190,7 @@ function SystemHealth() {
       <div className="bg-white border border-[#dfe4eb] rounded-lg shadow-sm">
 
         {/* AUDIT TOP */}
-        <div className="h-[62px] px-5 flex items-center justify-between border-b border-[#e5e8ee]">
+        <div className="h-15.5 px-5 flex items-center justify-between border-b border-[#e5e8ee]">
 
           <div className="flex items-center gap-2">
 
@@ -241,7 +209,7 @@ function SystemHealth() {
             {/* SEARCH */}
             <div className="relative">
 
-              <span className="absolute left-2.5 top-[9px] text-gray-400 text-[13px]">
+              <span className="absolute left-2.5 top-2.25 text-gray-400 text-[13px]">
                 ⌕
               </span>
 
@@ -252,7 +220,7 @@ function SystemHealth() {
                   setPage(1);
                 }}
                 placeholder="Search logs..."
-                className="w-[190px] h-[34px] pl-8 pr-2 border border-[#d9dfe8] rounded-md outline-none focus:border-[#2162c4] text-[11px]"
+                className="w-47.5 h-8.5 pl-8 pr-2 border border-[#d9dfe8] rounded-md outline-none focus:border-[#2162c4] text-[11px]"
               />
 
             </div>
@@ -264,7 +232,7 @@ function SystemHealth() {
                 setActionType(e.target.value);
                 setPage(1);
               }}
-              className="w-[145px] h-[34px] px-2 border border-[#d9dfe8] rounded-md bg-white text-[11px] outline-none"
+              className="w-36.25 h-8.5 px-2 border border-[#d9dfe8] rounded-md bg-white text-[11px] outline-none"
             >
               <option>All Action Types</option>
               <option>DATA_EXPORT</option>
@@ -277,7 +245,7 @@ function SystemHealth() {
             <select
               value={timeFilter}
               onChange={(e) => setTimeFilter(e.target.value)}
-              className="w-[120px] h-[34px] px-2 border border-[#d9dfe8] rounded-md bg-white text-[11px] outline-none"
+              className="w-30 h-8.5 px-2 border border-[#d9dfe8] rounded-md bg-white text-[11px] outline-none"
             >
               <option>Last 24 Hours</option>
               <option>Last 7 Days</option>
@@ -332,7 +300,7 @@ function SystemHealth() {
 
                     <div className="flex items-center gap-2">
 
-                      <div className="w-[27px] h-[27px] rounded-full bg-[#e7f0ff] text-[#2162c4] flex items-center justify-center text-[9px] font-bold">
+                      <div className="w-6.75 h-6.75 rounded-full bg-[#e7f0ff] text-[#2162c4] flex items-center justify-center text-[9px] font-bold">
                         {log.avatar}
                       </div>
 
@@ -381,7 +349,7 @@ function SystemHealth() {
 
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
-                className="w-[29px] h-[29px] border border-[#dce1e8] rounded-md text-gray-500 hover:bg-gray-50 text-[13px]"
+                className="w-7.25 h-7.25 border border-[#dce1e8] rounded-md text-gray-500 hover:bg-gray-50 text-[13px]"
               >
                 ‹
               </button>
@@ -390,7 +358,7 @@ function SystemHealth() {
                 <button
                   key={num}
                   onClick={() => setPage(num)}
-                  className={`w-[29px] h-[29px] rounded-md border text-[11px] ${page === num
+                  className={`w-7.25 h-7.25 rounded-md border text-[11px] ${page === num
                     ? "border-[#2162c4] bg-[#edf4ff] text-[#2162c4] font-bold"
                     : "border-[#dce1e8] text-gray-600 hover:bg-gray-50"
                     }`}
@@ -401,7 +369,7 @@ function SystemHealth() {
 
               <button
                 onClick={() => setPage(Math.min(3, page + 1))}
-                className="w-[29px] h-[29px] border border-[#dce1e8] rounded-md text-gray-500 hover:bg-gray-50 text-[13px]"
+                className="w-7.25 h-7.25 border border-[#dce1e8] rounded-md text-gray-500 hover:bg-gray-50 text-[13px]"
               >
                 ›
               </button>
@@ -414,7 +382,7 @@ function SystemHealth() {
 
       </div>
 
-    </main>
+    </section>
   );
 }
 

@@ -51,7 +51,10 @@ export default function AdminLayout() {
           </header>
 
           {/* Section */}
-          <Outlet />
+
+          <div className='p-7'>
+            <Outlet />
+          </div>
 
           {/* Footer */}
           <div className="mt-6 pt-4 border-t text center">
