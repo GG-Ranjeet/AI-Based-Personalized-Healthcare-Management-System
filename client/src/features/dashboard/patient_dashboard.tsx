@@ -1,15 +1,105 @@
 
-import { Link, useNavigate } from 'react-router-dom';
-
-export default function DashboardView({ appointments, patientInfo }: any) {
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import { User, MessageSquare, CalendarCheck, Bot, Stethoscope, Ambulance, Leaf, Pill, Clock, CalendarDays, CalendarX, PhoneCall } from 'lucide-react';
+export default function DashboardView({ patientInfo: fallbackPatientInfo }: any) {
   const navigate = useNavigate();
+  const context: any = useOutletContext();
+  const backendUser = context?.user;
+
+  // Merge the hardcoded data with the real backend user data
+  const patientInfo = {
+    ...fallbackPatientInfo,
+    name: backendUser?.name || fallbackPatientInfo?.name,
+    id: backendUser?.id || fallbackPatientInfo?.id,
+  };
+
+  // Quick AI Recommender state
+  const [symptomInput, setSymptomInput] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiRecommendation, setAiRecommendation] = useState('');
+
+  const handleSymptomSubmit = async (e: any) => {
+    e.preventDefault();
+    if (!symptomInput.trim()) return;
+    setAiLoading(true);
+    setAiRecommendation('');
+    try {
+      const response = await fetch('/api/chat/new', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userMessage: symptomInput + "\n\n(local configuration for message: reply in short sentence like 1 or 2 sentences)" })
+      });
+      const data = await response.json();
+      setAiRecommendation(data.reply);
+    } catch (err) {
+      console.error(err);
+      setAiRecommendation('Sorry, I encountered an error. Please try again.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Medicine Reminders & Appointments
+  const [medicines, setMedicines] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        // Fetch Medicines
+        const medRes = await fetch('/api/medicine', { headers: { Authorization: `Bearer ${token}` } });
+        const medData = await medRes.json();
+        if (medData.medicines) {
+          const sortedMedicines = medData.medicines.sort((a: any, b: any) => {
+            const timeA = new Date(`1970/01/01 ${a.time}`).getTime();
+            const timeB = new Date(`1970/01/01 ${b.time}`).getTime();
+            if (!isNaN(timeA) && !isNaN(timeB)) return timeA - timeB;
+            return (a.time || "").localeCompare(b.time || "");
+          });
+          setMedicines(sortedMedicines);
+        }
+
+        // Fetch Appointments
+        const apptRes = await fetch('/api/appointments', { headers: { Authorization: `Bearer ${token}` } });
+        const apptData = await apptRes.json();
+        if (apptData.success) {
+          setAppointments(apptData.appointments);
+        }
+      } catch (err) {
+        console.error("Error fetching data", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleMarkTaken = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/medicine/${id}/taken`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        setMedicines(prev => prev.map(m => m._id === id ? { ...m, status: 'taken' } : m));
+      }
+    } catch (err) {
+      console.error("Error updating medicine", err);
+    }
+  };
 
   return (
     <div className="page-container dashboard-fade">
       {/* Patient welcome card aur basic info */}
       <div className="patient-banner">
         <div className="patient-main-info">
-          <div className="patient-avatar">👤</div>
+          <div className="patient-avatar bg-blue-100 text-blue-600 flex items-center justify-center rounded-full w-16 h-16">
+            <User size={32} />
+          </div>
           <div>
             <h2 className="patient-name">Welcome back, {patientInfo.name}!</h2>
             <p className="patient-subtext">
@@ -18,17 +108,17 @@ export default function DashboardView({ appointments, patientInfo }: any) {
           </div>
         </div>
         <div className="banner-actions">
-          <button className="btn-primary" onClick={() => navigate('/chat')}>
-            💬 Start AI Symptom Check
+          <button className="btn-primary flex items-center gap-2" onClick={() => navigate('/dashboard/chat')}>
+            <MessageSquare size={16} /> Start AI Symptom Check
           </button>
-          <button className="btn-secondary" onClick={() => navigate('/doctors')}>
-            👨‍⚕️ Book Doctor
+          <button className="btn-secondary flex items-center gap-2" onClick={() => navigate('/dashboard/appointment')}>
+            <CalendarCheck size={16} /> Check Appointments
           </button>
         </div>
       </div>
 
       {/* Health vitals (Blood pressure, Heart rate, etc.) */}
-      <div className="section-title-row">
+      {/* <div className="section-title-row">
         <h3>📊 Real-Time Patient Health Vitals</h3>
         <span className="live-pulse">🔴 Live Monitoring (Local)</span>
       </div>
@@ -78,37 +168,64 @@ export default function DashboardView({ appointments, patientInfo }: any) {
           <div className="vital-value">95 <span className="unit">mg/dL</span></div>
           <div className="vital-label">Blood Sugar</div>
         </div>
-      </div>
+      </div> */}
 
       {/* Quick services aur appointments layout grid */}
       <div className="dashboard-columns" style={{ marginTop: '24px' }}>
         {/* Quick action feature cards */}
         <div className="dashboard-col-main">
-          <h3 style={{ marginBottom: '14px' }}>🚀 Quick Healthcare Services</h3>
+          {/* Quick AI Recommender Widget */}
+          <div className="card-panel" style={{ marginBottom: '24px' }}>
+            <h3 style={{ marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Bot size={20} className="text-blue-600" /> AI Health Recommender
+            </h3>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+              Describe your symptoms below to get an instant risk assessment, recommended department, and first-aid steps.
+            </p>
+            <form onSubmit={handleSymptomSubmit} style={{ display: 'flex', gap: '10px' }}>
+              <input
+                type="text"
+                value={symptomInput}
+                onChange={(e) => setSymptomInput(e.target.value)}
+                placeholder="e.g. I have a severe headache and fever..."
+                style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '14px', outline: 'none' }}
+              />
+              <button type="submit" className="btn-primary" disabled={aiLoading}>
+                {aiLoading ? 'Analyzing...' : 'Analyze Symptoms'}
+              </button>
+            </form>
+            {aiRecommendation && (
+              <div className='ai-message' style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', color: '#1e293b' }}>
+                <ReactMarkdown>{aiRecommendation}</ReactMarkdown>
+              </div>
+            )}
+          </div>
+
+          <h3 style={{ marginBottom: '14px' }}>Quick Healthcare Services</h3>
           <div className="quick-services-grid">
-            <div className="service-card" onClick={() => navigate('/chat')}>
-              <div className="service-icon">🤖</div>
+            <div className="service-card" onClick={() => navigate('/dashboard/chat')}>
+              <div className="service-icon text-blue-600"><Bot size={28} /></div>
               <h4>AI Symptom Check</h4>
               <p>Describe your discomfort to get instant specialist recommendations & first aid.</p>
               <span className="service-link">Launch Assistant →</span>
             </div>
 
-            <div className="service-card" onClick={() => navigate('/doctors')}>
-              <div className="service-icon">🩺</div>
+            <div className="service-card" onClick={() => navigate('/dashboard/doctors')}>
+              <div className="service-icon text-blue-600"><Stethoscope size={28} /></div>
               <h4>Find Doctors</h4>
               <p>Browse experienced specialists by department and reserve time slots.</p>
               <span className="service-link">View Directory →</span>
             </div>
 
-            <div className="service-card" onClick={() => navigate('/emergency')}>
-              <div className="service-icon">🚑</div>
+            <div className="service-card" onClick={() => navigate('/dashboard/emergency')}>
+              <div className="service-icon text-red-500"><Ambulance size={28} /></div>
               <h4>Emergency Contacts</h4>
               <p>Instant hotline numbers (102/112) and first-aid steps for critical care.</p>
               <span className="service-link">Get Emergency Aid →</span>
             </div>
 
-            <div className="service-card" onClick={() => navigate('/remedies')}>
-              <div className="service-icon">🌿</div>
+            <div className="service-card" onClick={() => navigate('/dashboard/example')}>
+              <div className="service-icon text-green-600"><Leaf size={28} /></div>
               <h4>Home Remedies</h4>
               <p>Curated natural home wellness tips for mild daily health concerns.</p>
               <span className="service-link">Explore Remedies →</span>
@@ -118,15 +235,41 @@ export default function DashboardView({ appointments, patientInfo }: any) {
 
         {/* Scheduled appointments side column */}
         <div className="dashboard-col-side">
+          {/* Medicine Reminders Widget */}
+          <div className="card-panel" style={{ marginBottom: '16px' }}>
+            <div className="panel-header">
+              <h3 className="flex items-center gap-2"><Pill size={18} className="text-blue-500" /> Medicine Reminders</h3>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {medicines.map((med) => (
+                <div key={med._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10px', borderBottom: '1px solid var(--border-color)' }}>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>{med.name}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Clock size={12} /> {med.time}
+                    </div>
+                  </div>
+                  {med.status === 'taken' ? (
+                    <span style={{ fontSize: '11px', fontWeight: 700, backgroundColor: '#d1fae5', color: '#047857', padding: '4px 8px', borderRadius: '12px' }}>Taken</span>
+                  ) : (
+                    <button onClick={() => handleMarkTaken(med._id)} style={{ fontSize: '11px', fontWeight: 600, backgroundColor: 'var(--accent-color)', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer' }}>Mark Taken</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="card-panel">
             <div className="panel-header">
-              <h3>📅 Scheduled Appointments</h3>
+              <h3 className="flex items-center gap-2"><CalendarDays size={18} className="text-blue-600" /> Scheduled Appointments</h3>
               <Link to="/appointments" className="view-all-link">View All ({appointments.length})</Link>
             </div>
 
             {appointments.length === 0 ? (
               <div className="empty-state-box">
-                <div style={{ fontSize: '32px', marginBottom: '8px' }}>📆</div>
+                <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'center' }}>
+                  <CalendarX size={32} className="text-gray-400" />
+                </div>
                 <p>No upcoming appointments scheduled.</p>
                 <button className="btn-small-primary" style={{ marginTop: '10px' }} onClick={() => navigate('/doctors')}>
                   Book Consultation
@@ -134,14 +277,17 @@ export default function DashboardView({ appointments, patientInfo }: any) {
               </div>
             ) : (
               <div className="appointment-mini-list">
-                {appointments.slice(0, 3).map((appt : any) => (
-                  <div key={appt.id} className="appointment-mini-card">
-                    <div className="appt-doc-avatar">{appt.doctorAvatar || '👨‍⚕️'}</div>
+                {appointments.slice(0, 3).map((appt: any) => (
+                  <div key={appt._id || appt.id} className="appointment-mini-card">
+                    <div className="appt-doc-avatar bg-blue-50 text-blue-600 flex items-center justify-center rounded-full w-10 h-10">
+                      <Stethoscope size={20} />
+                    </div>
                     <div className="appt-info">
                       <strong className="appt-doc-name">{appt.doctorName}</strong>
                       <div className="appt-spec">{appt.specialty}</div>
-                      <div className="appt-datetime">
-                        <span>🗓️ {appt.date}</span> • <span>⏰ {appt.time}</span>
+                      <div className="appt-datetime flex items-center gap-3">
+                        <span className="flex items-center gap-1"><CalendarDays size={12} /> {appt.date}</span>
+                        <span className="flex items-center gap-1"><Clock size={12} /> {appt.time}</span>
                       </div>
                     </div>
                     <span className="appt-status-tag">{appt.status}</span>
@@ -153,7 +299,7 @@ export default function DashboardView({ appointments, patientInfo }: any) {
 
           {/* Emergency helpline numbers box */}
           <div className="card-panel emergency-widget" style={{ marginTop: '16px' }}>
-            <h4>🚨 Emergency Helplines</h4>
+            <h4 className="flex items-center gap-2"><PhoneCall size={18} className="text-red-500" /> Emergency Helplines</h4>
             <div className="helpline-row">
               <span>National Ambulance:</span>
               <a href="tel:102" className="helpline-num">102</a>

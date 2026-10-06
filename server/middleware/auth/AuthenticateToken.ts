@@ -6,6 +6,7 @@ import type { IJWTPayload } from '../../customInterfaces.ts';
 
 // 1. Middleware to verify Bearer Token
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.header);
   const authHeader = req.headers['authorization'];
   // Header format: "Bearer <TOKEN>"
   const token = authHeader && authHeader.split(' ')[1];

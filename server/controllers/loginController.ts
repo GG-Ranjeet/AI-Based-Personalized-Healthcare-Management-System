@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 
 export const loginController = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
 
         if (!email || !password) {
             res.status(400).json({ success: false, message: 'Email and password fields are required' });
@@ -16,14 +16,24 @@ export const loginController = async (req: Request, res: Response): Promise<void
 
         const patient = await Patient.findOne({ email }).select('+password');
         if (!patient) {
-            res.status(404).json({ success: false, message: 'User not found' });
+            res.status(404).json({ success: false, message: "User doesn't exist" });
             return;
         }
 
-        const isMatch = await bcrypt.compare(password, patient.password);
+        if (role && patient.role && role.toLowerCase() !== patient.role.toLowerCase()) {
+            res.status(403).json({ success: false, message: `Access denied. Account is not registered as a ${role}.` });
+            return;
+        }
+
+        let isMatch = await bcrypt.compare(password, patient.password);
+
+        // Fallback: Check if the password in the database is in plain text (common for test users created before hashing was implemented)
+        if (!isMatch && password === patient.password) {
+            isMatch = true;
+        }
 
         if (!isMatch) {
-            res.status(400).json({ success: false, message: 'Invalid Credentials' });
+            res.status(400).json({ success: false, message: 'Incorrect password' });
             return;
         }
 
@@ -53,6 +63,9 @@ export const loginController = async (req: Request, res: Response): Promise<void
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
+
+        // Update the lastLogin field
+        await Patient.findByIdAndUpdate(patient._id, { lastLogin: new Date() });
 
         res.status(200).json({ success: true, message: 'Login successful', patient: payload, token: accessToken });
 

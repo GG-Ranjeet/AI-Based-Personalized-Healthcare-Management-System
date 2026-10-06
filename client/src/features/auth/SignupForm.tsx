@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Checkbox from "../component/utils/Checkbox";
 import { useNavigate } from "react-router-dom";
+import "./SignupForm.css"
 
 const SignupForm = () => {
     const [name, setName] = useState("");
@@ -23,7 +24,7 @@ const SignupForm = () => {
     }
     const handleSignupForm = async (e: React.BaseSyntheticEvent<SubmitEvent, HTMLFormElement, HTMLFormElement>) => {
         e.preventDefault();
-        
+
         const form = e.target;
         const formData = new FormData(form);
         const role = "patient"; // Default role for signup
@@ -38,8 +39,8 @@ const SignupForm = () => {
         }
 
         // console.log("Form submitted with values:", { name, role, email, password });
-        
-        try{
+
+        try {
             const response = await fetch("/api/signup", {
                 method: "POST",
                 headers: {
@@ -49,7 +50,7 @@ const SignupForm = () => {
             });
             const result = await response.json();
 
-            if (response.ok &&  result.success) {
+            if (response.ok && result.success) {
                 console.log("Signup successful:", result);
                 localStorage.setItem('token', result.token);
                 navigate('/dashboard');
@@ -65,9 +66,10 @@ const SignupForm = () => {
             console.error("Error during login:", error);
         }
     }
-    
+
 
     return (
+        <div className="flex-1 flex items-center justify-center w-full min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-sm flex flex-col gap-5 px-4 rounded-2xl p-8 space-y-6">
             <div className="text-center space-y-2">
                 <h1 className="text-2xl font-bold text-slate-800">MediFlow AI</h1>
@@ -75,7 +77,7 @@ const SignupForm = () => {
             </div>
 
             <div className="flex flex-col gap-4 bg-white p-6 rounded-xl shadow-xl">
-                <form  className="space-y-6" onSubmit={handleSignupForm}>
+                <form className="space-y-6" onSubmit={handleSignupForm}>
                     {/* <div>
                         <label htmlFor="selector" className="text-sm font-medium">
                             SELECT ACCESS ROLE
@@ -119,7 +121,7 @@ const SignupForm = () => {
                             <label htmlFor="password" className="block text-sm font-medium text-slate-700">
                                 Password
                             </label>
-                            
+
                         </div>
                         <input
                             type="password"
@@ -135,7 +137,7 @@ const SignupForm = () => {
                             <label htmlFor="confirm_password" className="block text-sm font-medium text-slate-700">
                                 Password
                             </label>
-                            
+
                         </div>
                         <input
                             type="confirm_password"
@@ -148,7 +150,7 @@ const SignupForm = () => {
                     </div>
 
                     <div className="space-y-6">
-                        <Checkbox props={{id: "remember-me", name:"remember-me"}} >
+                        <Checkbox props={{ id: "remember-me", name: "remember-me" }} >
                             <label htmlFor="remember-me" className="text-sm text-gray-500">
                                 Remember this device for 30 days
                             </label>
@@ -164,7 +166,7 @@ const SignupForm = () => {
                         </button>
                     </div>
                 </form>
-                <hr className="border-none h-0.5 bg-gray-200"/>
+                <hr className="border-none h-0.5 bg-gray-200" />
                 <p className="text-sm text-center text-gray-500">
                     Already have an account?{" "}
                     <a href="/login" className="font-semibold text-indigo-400 hover:text-indigo-600">
@@ -172,6 +174,7 @@ const SignupForm = () => {
                     </a>
                 </p>
             </div>
+        </div>
         </div>
     );
 };

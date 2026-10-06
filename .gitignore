@@ -3,6 +3,8 @@ server/node_modules
 **/*.env
 node_modules
 client-test
+frontend
+frontend-sakshi
 # Logs
 logs
 *.log

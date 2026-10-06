@@ -1,0 +1,30 @@
+:root {
+    --bg-primary: #f4f7fb;
+    --bg-secondary: #ffffff;
+    --bg-sidebar: #0f172a;
+    --sidebar-text: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+
+    --accent-color: #0284c7;
+    --accent-hover: #0369a1;
+    --accent-light: #e0f2fe;
+
+    --bot-msg-bg: #ffffff;
+    --bot-msg-border: #e2e8f0;
+    --user-msg-bg: #0284c7;
+    --user-msg-text: #ffffff;
+
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --success-color: #10b981;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+    --transition-speed: 0.3s;
+}

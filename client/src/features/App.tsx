@@ -2,14 +2,36 @@ import "./App.css";
 import Example from "./component/Example";
 import LoginForm from "./auth/LoginForm";
 import Dashboard from "./dashboard/patient";
+import { useEffect, useState } from "react";
 
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignupForm from "./auth/SignupForm";
+import ForgotPassword from "./auth/ForgotPassword";
 import { Home } from "./component/Home";
 import ProtectedRoute from "./component/utils/ProtectedRoute";
-import DashboardView from "./dashboard/patient_dashboard";
-import { useEffect, useState } from "react";
-import ChatView from "./dashboard/chatView";
+import DashboardViewOld from "./dashboard/patient_dashboard";
+import DoctorsView from "./dashboard/DoctorsView";
+import ChatViewOld from "./dashboard/chatView";
+import EmergencyViewOld from "./dashboard/EmergencyView";
+import SettingsViewOld from "./dashboard/SettingsView";
+import RecordsView from "./dashboard/RecordsView";
+
+// Teammate Patient Components
+import PatientLayout from "./patient/PatientLayout";
+import DashboardView from "./patient/DashboardView";
+import ChatView from "./patient/ChatView";
+import AppointmentsView from "./patient/AppointmentsView";
+import DepartmentsView from "./patient/DepartmentsView";
+import EmergencyView from "./patient/EmergencyView";
+import AboutView from "./patient/AboutView";
+import RemediesView from "./patient/RemediesView";
+
+// Teammate Admin Components
+import AdminLayout from "./admin/AdminLayout";
+import AdminDashboard from "./admin/AdminDashboard";
+import UserManagement from "./admin/UserManagement";
+import Analytics from "./admin/Analytics";
+import SystemHealth from "./admin/SystemHealth";
 
 const initialAppointments = [
     {
@@ -26,6 +48,7 @@ const initialAppointments = [
         createdAt: "09 Aug 2026",
     },
 ];
+
 const initialPatientInfo = {
     id: "P-80492",
     name: "Sumit Singh",
@@ -40,47 +63,82 @@ function App() {
         const saved = localStorage.getItem("health_app_appointments");
         return saved ? JSON.parse(saved) : initialAppointments;
     });
-  const defaultWelcomeMessage = {
-    sender: 'bot',
-    html: `
-      <p>Hello! I am your <strong>AI Healthcare Recommendation Assistant</strong>.</p>
-      <p>Describe how you are feeling or what symptoms you have (e.g., <em>"I have a high fever and headache"</em>). I will analyze your symptoms, estimate risk level, and recommend the right doctor department & first-aid steps.</p>
-    `
-  };
 
-  const [messages, setMessages] = useState(() => {
-    const saved = localStorage.getItem('health_app_chat');
-    return saved ? JSON.parse(saved) : [defaultWelcomeMessage];
-  });
+    const defaultWelcomeMessage = {
+        sender: 'bot',
+        html: `
+          <p>Hello! I am your <strong>AI Healthcare Recommendation Assistant</strong>.</p>
+          <p>Describe how you are feeling or what symptoms you have (e.g., <em>"I have a high fever and headache"</em>). I will analyze your symptoms, estimate risk level, and recommend the right doctor department & first-aid steps.</p>
+        `
+    };
+
+    const [messages, setMessages] = useState(() => {
+        const saved = localStorage.getItem('health_app_chat');
+        return saved ? JSON.parse(saved) : [defaultWelcomeMessage];
+    });
+
     useEffect(() => {
         localStorage.setItem("health_app_appointments", JSON.stringify(appointments));
     }, [appointments]);
 
-    // const handleBookAppointment = (newAppt : any) => {
-    //     setAppointments((prev: any) => [newAppt, ...prev]);
-    // };
+    useEffect(() => {
+        localStorage.setItem('health_app_chat', JSON.stringify(messages));
+    }, [messages]);
+
+    const handleBookAppointment = (newAppt: any) => {
+        setAppointments((prev: any) => [newAppt, ...prev]);
+    };
+
+    const handleCancelAppointment = (apptId: any) => {
+        setAppointments((prev: any) => prev.filter((a: any) => a.id !== apptId));
+    };
 
     return (
-        <>
-            <div id="app" className="min-h-screen flex items-center justify-center gap-4 bg-gray-100">
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/login" element={<LoginForm />} />
-                        <Route path="/signup" element={<SignupForm />} />
+        <div id="app" className="w-full min-h-screen flex flex-col bg-gray-100">
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<LoginForm />} />
+                    <Route path="/signup" element={<SignupForm />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
 
-                        <Route element={<ProtectedRoute />}>
-                            <Route path="/dashboard" element={<Dashboard />}>
-                                <Route index element={<DashboardView appointments={appointments} patientInfo={patientInfo} />} />
-                                <Route path="chat" element={ <ChatView messages={messages} setMessages={setMessages} />} />
-                                <Route path="appointment" element={<Example />} />
-                                <Route path="example" element={<Example />} />
-                            </Route>
+                    <Route element={<ProtectedRoute />}>
+                        {/* Old Dashboard Routes */}
+                        <Route path="/dashboard" element={<Dashboard />}>
+                            <Route index element={<DashboardViewOld appointments={appointments} patientInfo={patientInfo} />} />
+                            <Route path="chat" element={<ChatViewOld messages={messages} setMessages={setMessages} />} />
+                            <Route path="appointment" element={<AppointmentsView appointments={appointments} onCancelAppointment={handleCancelAppointment} />} />
+                            <Route path="doctors" element={<DoctorsView onBookAppointment={handleBookAppointment} />} />
+                            <Route path="example" element={<Example />} />
+                            <Route path="emergency" element={<EmergencyViewOld />} />
+                            <Route path="settings" element={<SettingsViewOld />} />
+                            <Route path="records" element={<RecordsView />} />
                         </Route>
-                    </Routes>
-                </BrowserRouter>
-            </div>
-        </>
+
+                        {/* New Patient Routes */}
+                        <Route path="/patient" element={<PatientLayout patientInfo={patientInfo} />}>
+                            <Route index element={<DashboardView appointments={appointments} patientInfo={patientInfo} />} />
+                            <Route path="chat" element={<ChatView messages={messages} setMessages={setMessages} />} />
+                            <Route path="doctors" element={<DoctorsView onBookAppointment={handleBookAppointment} />} />
+                            <Route path="appointments" element={<AppointmentsView appointments={appointments} onCancelAppointment={handleCancelAppointment} />} />
+                            <Route path="departments" element={<DepartmentsView />} />
+                            <Route path="emergency" element={<EmergencyView />} />
+                            <Route path="about" element={<AboutView />} />
+                            <Route path="remedies" element={<RemediesView />} />
+                        </Route>
+
+                        {/* New Admin Routes */}
+                        <Route path="/admin" element={<AdminLayout />}>
+                            <Route index element={<AdminDashboard />} />
+                            <Route path="dashboard" element={<AdminDashboard />} />
+                            <Route path="view-users" element={<UserManagement />} />
+                            <Route path="analytics" element={<Analytics />} />
+                            <Route path="system-health" element={<SystemHealth />} />
+                        </Route>
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+        </div>
     );
 }
 
