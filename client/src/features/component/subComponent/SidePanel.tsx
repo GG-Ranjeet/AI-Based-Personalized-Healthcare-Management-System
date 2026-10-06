@@ -49,6 +49,9 @@ const SidePanel = () => {
             case 3:
                 navigate("appointment");
                 break;
+            case 5:
+                navigate("records");
+                break;
             default:
                 navigate("example");
             

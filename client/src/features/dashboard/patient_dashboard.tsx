@@ -203,7 +203,7 @@ export default function DashboardView({ patientInfo: fallbackPatientInfo }: any)
 
           <h3 style={{ marginBottom: '14px' }}>Quick Healthcare Services</h3>
           <div className="quick-services-grid">
-            <div className="service-card" onClick={() => navigate('/chat')}>
+            <div className="service-card" onClick={() => navigate('/dashboard/chat')}>
               <div className="service-icon text-blue-600"><Bot size={28} /></div>
               <h4>AI Symptom Check</h4>
               <p>Describe your discomfort to get instant specialist recommendations & first aid.</p>
@@ -217,14 +217,14 @@ export default function DashboardView({ patientInfo: fallbackPatientInfo }: any)
               <span className="service-link">View Directory →</span>
             </div>
 
-            <div className="service-card" onClick={() => navigate('/emergency')}>
+            <div className="service-card" onClick={() => navigate('/dashboard/emergency')}>
               <div className="service-icon text-red-500"><Ambulance size={28} /></div>
               <h4>Emergency Contacts</h4>
               <p>Instant hotline numbers (102/112) and first-aid steps for critical care.</p>
               <span className="service-link">Get Emergency Aid →</span>
             </div>
 
-            <div className="service-card" onClick={() => navigate('/remedies')}>
+            <div className="service-card" onClick={() => navigate('/dashboard/example')}>
               <div className="service-icon text-green-600"><Leaf size={28} /></div>
               <h4>Home Remedies</h4>
               <p>Curated natural home wellness tips for mild daily health concerns.</p>

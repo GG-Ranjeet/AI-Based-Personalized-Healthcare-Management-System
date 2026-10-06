@@ -14,6 +14,7 @@ import DoctorsView from "./dashboard/DoctorsView";
 import ChatViewOld from "./dashboard/chatView";
 import EmergencyViewOld from "./dashboard/EmergencyView";
 import SettingsViewOld from "./dashboard/SettingsView";
+import RecordsView from "./dashboard/RecordsView";
 
 // Teammate Patient Components
 import PatientLayout from "./patient/PatientLayout";
@@ -111,6 +112,7 @@ function App() {
                             <Route path="example" element={<Example />} />
                             <Route path="emergency" element={<EmergencyViewOld />} />
                             <Route path="settings" element={<SettingsViewOld />} />
+                            <Route path="records" element={<RecordsView />} />
                         </Route>
 
                         {/* New Patient Routes */}
